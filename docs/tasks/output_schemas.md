@@ -1,9 +1,16 @@
-# Output Schemas
+# Task and Project Output Schemas
 
-This file defines the current stage-output tables and their minimum manifest
-payloads.
+This document is the canonical owner of result-table schemas for Task1, Task2,
+and S7 project synthesis. It defines required table identities, key fields,
+metric fields, denominator fields, and minimum manifest payloads. It does not
+define how a metric is calculated; those rules are owned by `docs/metrics/`.
 
-## Common Manifest Fields
+Task definitions are owned by `docs/tasks/task1.md` and
+`docs/tasks/task2.md`. Data-stage snapshot schemas are owned by `docs/data/`.
+The tables listed here are result or synthesis interfaces and must not silently
+change when a figure layout changes.
+
+## Common manifest fields
 
 Every result table ships with a table-specific manifest that includes:
 
@@ -17,7 +24,11 @@ Every result table ships with a table-specific manifest that includes:
 - `metric_columns`
 - `schema_version`
 
-## Task1 Tables
+Manifest values must describe the emitted table rather than an intended table.
+If a required field or key changes, increment the schema version and update the
+owning task contract and validation checks together.
+
+## Task1 schemas
 
 Task1 key vocabulary:
 
@@ -30,15 +41,21 @@ Task1 key vocabulary:
 - one row per Task1 unit, representation, and metric
 - key fields:
   `scope, dataset_or_direction, perturbation_type, perturbation_gene, representation, metric_name`
-- metric fields: `metric_value`
+- metric field: `metric_value`
 - denominator fields:
   `n_instances_used, n_instances_split_a, n_instances_split_b, n_instances_subsampled`
+- quality field: `underpowered_for_e_distance`
+
+The quality field is `true` when a comparison side has fewer than `2` instances,
+as required by the Task1 contract. Its presence and value must be auditable
+from the emitted denominator fields.
 
 ### `task1_retrieval_per_query.parquet`
 
 - one row per Task1 retrieval query
 - key fields:
   `scope, dataset_or_direction, perturbation_type, representation, query_instance_id`
+- `query_instance_id` uses the upstream `instance_id` value directly
 - required fields:
   `cell_line, perturbation_gene, gallery_size, n_positive_keys, rank_true`
 - retrieval metric fields:
@@ -65,9 +82,11 @@ Task1 key vocabulary:
 - key fields:
   `dataset_or_direction, perturbation_type`
 - required fields:
-  `alignment_key_lincs, alignment_key_scperturb, n_matched_units`
+  `alignment_unit_definition, n_matched_units`
+- `alignment_unit_definition` is fixed to:
+  `(cell_line, perturbation_type, perturbation_gene)`
 
-## Task2 Tables
+## Task2 schemas
 
 Task2 key vocabulary:
 
@@ -135,7 +154,12 @@ Task2 key vocabulary:
   `analysis_family, dataset, cell_line, direction, representation, metric_name`
 - value field: `metric_value`
 
-## S7 Tables
+## S7 project synthesis schemas
+
+S7 combines audited upstream Task1 and Task2 outputs. An otherwise explicitly
+verified but unaudited input is not a substitute for the audited stage
+requirement. S7 does not redefine upstream task units, directions,
+representations, or denominator fields.
 
 S7 key vocabulary:
 
@@ -166,7 +190,10 @@ S7 key vocabulary:
 ### `project_representation_scorecard.csv`
 
 - one row per representation
-- key field:
-  `representation`
+- key field: `representation`
 - summary fields:
   `task1_axis_value_raw, task2_axis_value_raw, overall_axis_value_raw`
+
+The scorecard does not authorize a new weighting, normalization, or pooling
+rule. Such a rule must be separately approved and recorded with its inputs and
+version.

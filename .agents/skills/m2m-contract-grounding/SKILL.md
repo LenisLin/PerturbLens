@@ -12,12 +12,14 @@ meaning, or figure roles.
 
 Read only the smallest relevant subset, in this order:
 
-1. `docs/redesign_checkpoint.md`
+1. `docs/README.md` and `docs/project.md`
 2. `docs/governance/state.md`
-3. `docs/governance/repo_conventions.md`
-4. the relevant contract docs under `docs/contracts/`
-5. `docs/data_contracts.md` when task data or manifests are involved
-6. `docs/manuscript_master.md` and plotting docs for manuscript or figure work
+3. `docs/governance/documentation_policy.md`
+4. the relevant task and metric contracts under `docs/tasks/` and `docs/metrics/`
+5. `docs/data/object_model.md` and the relevant preprocessing, representation,
+   or snapshot contract when task data or manifests are involved
+6. `docs/manuscript/outline.md` and `docs/visualization/figure_plan.md` for
+   manuscript or figure work
 
 ## Core Workflow
 

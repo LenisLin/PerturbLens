@@ -2,7 +2,7 @@ name: m2m-bench
 title: M2M-Bench
 one_liner: Audit-grade benchmark for modality and mechanism concordance across LINCS and scPerturb perturbation-response data.
 domain: Computational biology benchmark for perturbation-response concordance
-stage: Task1 audited; corrected multisource Task2 through S6 audited; S7 implemented with implcheck evidence
+stage: See docs/governance/state.md for implementation status and verification boundaries
 owner: unknown
 license: unknown
 entrypoints:
@@ -21,7 +21,7 @@ outputs:
   - runs/task_centric_migration/<run_id>/validation/task1/task1_validation.json
   - runs/task_centric_migration/<run_id>/validation/task2/task2_validation.json
 components:
-  - docs/contracts/
+  - docs/
   - docs/governance/
   - scripts/
   - scripts/fm_extractors/

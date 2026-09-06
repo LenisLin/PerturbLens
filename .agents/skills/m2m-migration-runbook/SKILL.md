@@ -14,10 +14,10 @@ Read these sources first:
 
 1. `docs/governance/runbook.md`
 2. `docs/governance/state.md`
-3. `docs/governance/local_storage_policy.md`
-4. `docs/governance/repo_conventions.md`
-5. `docs/data_contracts.md` and `docs/contracts/output-schemas.md` when output
-   tables or manifests are affected
+3. `docs/governance/storage_policy.md`
+4. `docs/governance/documentation_policy.md`
+5. `docs/data/object_model.md`, the relevant `docs/data/snapshots/` contract,
+   and `docs/tasks/output_schemas.md` when output tables or manifests are affected
 
 ## Core Workflow
 

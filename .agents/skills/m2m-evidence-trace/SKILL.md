@@ -12,11 +12,11 @@ manifests, or answering "what evidence supports this claim?"
 
 Read only what the task needs:
 
-1. `docs/governance/repo_conventions.md`
+1. `docs/governance/documentation_policy.md`
 2. `docs/governance/state.md`
-3. `docs/governance/local_storage_policy.md`
-4. the relevant task contract in `docs/contracts/`
-5. plotting docs for figure-facing tasks
+3. `docs/governance/storage_policy.md`
+4. the relevant contract and evidence index in `docs/tasks/`
+5. `docs/visualization/` contracts for figure-facing tasks
 
 ## Evidence Ranking
 

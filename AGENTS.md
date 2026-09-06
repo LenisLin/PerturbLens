@@ -1,7 +1,7 @@
 # M2M-Bench Agent Guide
 
-Start with `docs/redesign_checkpoint.md`. It defines the current benchmark
-system and the shared terminology for the rest of the repo.
+Start with `docs/README.md` and `docs/project.md`. They identify the current
+benchmark scope and the domain contracts that own its terminology and methods.
 
 ## Always-Active Repo Rules
 
@@ -10,23 +10,31 @@ system and the shared terminology for the rest of the repo.
 When repo documents disagree, use this order:
 
 1. Audited manifests and stage outputs
-2. `docs/contracts/*.md`
+2. Active contracts in `docs/tasks/`, `docs/data/`, and `docs/metrics/`
 3. `docs/governance/*.md`
-4. `docs/manuscript_master.md` and `docs/plotting/*.md`
+4. `docs/manuscript/` and `docs/visualization/`
+
+The roadmap proposes future work; history preserves earlier decisions. Neither
+supersedes an active contract. Report disagreements between run outputs and
+required behavior instead of silently rewriting either side.
 
 ### Minimum Grounding Before Changes
 
 Read the smallest relevant subset of:
 
-- `docs/redesign_checkpoint.md`
+- `docs/README.md` and `docs/project.md`
 - `docs/governance/state.md`
 - `docs/governance/runbook.md`
-- `docs/governance/repo_conventions.md`
-- `docs/data_contracts.md` when touching task data, manifests, or result tables
-- `docs/contracts/task1_spec.md` for Task1 semantics
-- `docs/contracts/task2_spec.md` for Task2 semantics
-- `docs/contracts/output-schemas.md` when editing outputs or validation logic
-- `docs/manuscript_master.md` and plotting docs for manuscript or figure work
+- `docs/governance/documentation_policy.md`
+- `docs/governance/storage_policy.md` for data or run roots
+- `docs/data/object_model.md` and relevant preprocessing/representation/snapshot
+  contracts when touching task data
+- `docs/tasks/task1.md` for Task1 semantics
+- `docs/tasks/task2.md` for Task2 semantics
+- `docs/tasks/output_schemas.md` and `docs/tasks/validation.md` for outputs
+- the relevant `docs/metrics/` contract for metric calculations
+- `docs/manuscript/outline.md` and `docs/visualization/figure_plan.md` for
+  manuscript or figure work
 
 ### Evidence And Storage Discipline
 
@@ -54,6 +62,10 @@ Read the smallest relevant subset of:
   current system.
 - Do not fall back from corrected multisource Task2 outputs to a scPerturb-only
   path.
+- Keep research direction in `docs/roadmap.md`, observed progress in
+  `docs/governance/state.md`, and decision rationale in `docs/history/`.
+- Organize shared methods by responsibility, not by figure number. Archived
+  documents are not active implementation instructions.
 
 ## Repo-Scoped Skills
 

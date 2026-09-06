@@ -1,47 +1,47 @@
 # M2M-Bench Project State
 
-Last updated: 2026-04-18
+Last updated: 2026-09-06
 
-## Objective
+## Role And Approved Scope
 
-Deliver an audit-grade benchmark for:
+This page records current work and unresolved requirements. Approved scope is
+defined by [project](../project.md), [Task1](../tasks/task1.md), and
+[Task2](../tasks/task2.md). Research extensions belong in the
+[roadmap](../roadmap.md).
 
-- `Task1`: modality concordance with `perturbation_type` held fixed
-- `Task2`: mechanism concordance between chemical and genetic cohorts inside
-  one dataset
+## Documentation And Implementation Status
 
-## Active Scope
+- The human lead approved the domain-based documentation architecture and
+  publication of the migration. See the
+  [decision](../history/decisions/2026-09-06_documentation_architecture.md) and
+  [changelog](../history/CHANGELOG.md) for its scope and checks.
+- Existing Task1 source preparation, snapshot, and FM contracts are retained.
+  Their presence does not certify that a final snapshot or downstream analysis
+  has passed validation.
+- The local working tree contains Task1 preparation/merge scripts and their
+  tests that are not part of the published baseline. This documentation release
+  does not publish that unrelated implementation work. Runtime contracts may
+  therefore describe local interfaces not yet available in the GitHub checkout.
+- The `S0` to `S7` mapping in the [runbook](runbook.md) is an execution
+  crosswalk, not a statement that those stages have completed.
+- Consult the [evidence index](../tasks/evidence_index.md) for specific checked
+  artifacts and the limits of those checks. The migration itself does not
+  establish benchmark performance or manuscript readiness.
 
-- Task1 internal: `LINCS` and `scPerturb`
-- Task1 cross: matched genetic slice between `LINCS` and `scPerturb`
-- Task2 core metrics: `LINCS` and `scPerturb` within each `dataset` and
-  `cell_line`
-- `FM` enters manuscript-facing scope only through the `scPerturb/K562`
-  `Figure 3F` local-only panel
-- Task1 and Task2 stay separate in manuscript-facing docs
+## Unresolved Work
 
-## Active Stage Status
+| Item | Controlling owner | Current boundary |
+| --- | --- | --- |
+| Exhaustive source audit-column inventories and richer artifact audits | [Task1 snapshot](../data/snapshots/task1.md) and source preparation documents | Core structure and minimum extraction mapping are retained; exhaustive detail is not frozen |
+| Additional model-specific QC sidecars | [FM representation](../data/representations/fm.md) | Instance keys, pairing handoff, minimum files, and existing acceptance gate remain defined; broader sidecars are not approved by this migration |
+| Task-specific statistical procedures and remaining numerical edge rules | [Task1](../tasks/task1.md), [Task2](../tasks/task2.md), and metric documents | Record missing definitions before implementation; do not fill them with unapproved defaults |
+| Task1 group-table key sufficiency | [Output schemas](../tasks/output_schemas.md) | The inherited `task1_group_concordance_long.csv` key omits `cell_line` although the task unit includes it; assess uniqueness for multi-cell-line outputs and approve any schema revision separately |
+| Figure 2 panel-ready interfaces and downstream exports | [Task1 results design](../visualization/figures/task1_results.md) | Detailed 2A twin-panel csv/json handoff and downstream export preparation remain unresolved |
+| Panel-level R scripts | [Figure plan](../visualization/figure_plan.md) | Figure roles and current thresholds are retained; the migration does not certify rendering implementation |
 
-- `S0` to `S2`: Task1 audited stage chain
-- `S3` to `S6`: Task2 audited stage chain
-- `S7`: project synthesis assembled from audited Task1 and Task2 outputs
+## Storage And Evidence
 
-## Active Roots
-
-- Task1 data: `/mnt/NAS_21T/ProjectData/M2M/data/task1`
-- Task2 data: `/mnt/NAS_21T/ProjectData/M2M/data/task2`
-- Stage runs: `/mnt/NAS_21T/ProjectData/M2M/runs`
-- Manuscript analysis: `/mnt/NAS_21T/ProjectData/M2M/runs/manuscript_active/analysis`
-- Plot review export: `/mnt/NAS_21T/ProjectData/M2M/runs/_staging/manuscript_visual_revision_current`
-
-## Active Doc Surface
-
-- `docs/redesign_checkpoint.md`
-- `docs/contracts/task1_spec.md`
-- `docs/contracts/task2_spec.md`
-- `docs/contracts/output-schemas.md`
-- `docs/manuscript_master.md`
-- `docs/plotting/plotting_preparation_freeze.md`
-- `docs/plotting/manuscript_figure_legends.md`
-
-The local checkout holds source and docs only.
+The [storage policy](storage_policy.md) owns the canonical data and run roots.
+The checkout remains source-only. Do not infer stage completion from a path
+listed in that policy, or use documentation updates as substitutes for audited
+run evidence.

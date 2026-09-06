@@ -1,4 +1,4 @@
-# Local Storage Policy
+# Storage Policy
 
 ## Goal
 

@@ -1,6 +1,7 @@
 # M2M-Bench
 
-M2M-Bench is an audit-grade benchmark for perturbation-response concordance.
+M2M-Bench is a benchmark for transcriptome-centered perturbation-response
+concordance. Its approved scope is defined in [the project document](docs/project.md).
 
 ## Core Scope
 
@@ -18,27 +19,27 @@ M2M-Bench is an audit-grade benchmark for perturbation-response concordance.
 ## Start Here
 
 - `AGENTS.md`
-- `docs/redesign_checkpoint.md`
+- `docs/README.md`
+- `docs/project.md`
+- `docs/roadmap.md`
 - `docs/governance/state.md`
 - `docs/governance/runbook.md`
-- `docs/contracts/task1_spec.md`
-- `docs/contracts/task2_spec.md`
-- `docs/contracts/output-schemas.md`
-- `docs/manuscript_master.md`
-- `docs/plotting/plotting_preparation_freeze.md`
-- `docs/plotting/manuscript_figure_legends.md`
+- `docs/tasks/task1.md`
+- `docs/tasks/task2.md`
+- `docs/tasks/output_schemas.md`
+- `docs/visualization/figure_plan.md`
+- `docs/manuscript/outline.md`
+- `docs/manuscript/figure_legends.md`
 
 ## Active Roots
 
-- Task1 data: `/mnt/NAS_21T/ProjectData/M2M/data/task1`
-- Task2 data: `/mnt/NAS_21T/ProjectData/M2M/data/task2`
-- Stage runs: `/mnt/NAS_21T/ProjectData/M2M/runs`
-- Manuscript analysis: `/mnt/NAS_21T/ProjectData/M2M/runs/manuscript_active/analysis`
-- Plot review export: `/mnt/NAS_21T/ProjectData/M2M/runs/_staging/manuscript_visual_revision_current`
+The [storage policy](docs/governance/storage_policy.md) defines the NAS-backed
+data, run, manuscript-analysis, and plot-export roots.
 
 ## Repo Layout
 
-- `docs/`: benchmark, governance, manuscript, and plotting contracts
+- `docs/`: project definition and roadmap, plus task, data, metric,
+  visualization, manuscript, governance, and history domains
 - `.agents/skills/`: repo-scoped operating workflows
 - `scripts/fm_extractors/`: FM extraction utilities
 
@@ -46,3 +47,8 @@ M2M-Bench is an audit-grade benchmark for perturbation-response concordance.
 
 The local checkout is source-only. Audited data, stage outputs, and manuscript
 analysis live on NAS-backed roots.
+
+Some Task1 preparation interfaces documented here currently exist only in the
+local development working tree. See [project state](docs/governance/state.md)
+for the distinction between published source, local implementation, and
+validated evidence.
