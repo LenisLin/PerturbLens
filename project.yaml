@@ -1,29 +1,59 @@
-name: m2m-bench
-title: M2M-Bench
-one_liner: Audit-grade benchmark for modality and mechanism concordance across LINCS and scPerturb perturbation-response data.
-domain: Computational biology benchmark for perturbation-response concordance
-stage: See docs/governance/state.md for implementation status and verification boundaries
+name: perturblens
+title: PerturbLens
+repository_legacy_name: M2M-Bench
+package_legacy_name: m2mbench
+one_liner: Response-centric characterization of what cellular perturbation information is reproducible, transferable, cross-modal, and compositional.
+domain: Computational biology study of cellular perturbation-response structure and predictability
+stage: Scientific reframing approved; legacy M2M execution core retained during staged migration. See docs/governance/state.md.
 owner: unknown
 license: unknown
-entrypoints:
-  - python -m pip install -e ".[dev]"
-  - python scripts/script1_reconstruct_task_centric_data.py --run-id <run_id>
-  - python scripts/script1_cutover_task_centric_data.py --candidate-root /mnt/NAS_21T/ProjectData/M2M/data_candidate
-datasets:
+scientific_axes:
+  state_representation:
+    transcriptomics:
+      - Gene
+      - Pathway
+      - FM
+    morphology:
+      - CellProfiler
+      - deep_embedding
+  response_construction:
+    - control_delta
+    - systema_reference
+  evaluation:
+    - population_similarity
+    - instance_retrieval
+    - model_prediction
+  biological_boundaries:
+    - within
+    - cellular_context
+    - target_or_compound
+    - intervention_modality
+    - readout_modality
+    - composition
+main_results:
+  - R1_framework
+  - R2_genetic_learnability
+  - R3_chemical_learnability
+  - R4_cross_intervention
+  - R5_cross_readout
+  - R6_combination
+current_datasets:
   - LINCS
   - scPerturb
-  - scPerturb K562
-outputs:
-  - data_candidate/task1/manifest.json
-  - data_candidate/task2/manifest.json
-  - runs/task_centric_migration/<run_id>/migration_report/migration_report.json
-  - runs/task_centric_migration/<run_id>/migration_report/migration_path_map.csv
-  - runs/task_centric_migration/<run_id>/validation/task1/task1_validation.json
-  - runs/task_centric_migration/<run_id>/validation/task2/task2_validation.json
+planned_data_families:
+  - matched_transcriptomics_morphology
+  - genetic_combinations
+  - chemical_combinations
+entrypoints:
+  - python -m pip install -e ".[dev]"
+  - legacy M2M run interfaces remain documented in docs/governance/runbook.md during migration
 components:
   - docs/
+  - docs/research/
+  - docs/tasks/
+  - docs/data/
+  - docs/metrics/
   - docs/governance/
   - scripts/
   - scripts/fm_extractors/
   - src/m2mbench/
-  - runs/

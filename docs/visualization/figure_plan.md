@@ -2,120 +2,113 @@
 
 ## Purpose
 
-This file maps the current benchmark questions to the manuscript figures. It
-is a presentation plan, not a replacement for task definitions or metric
-contracts. The scientific definitions are maintained in:
-
-- docs/project.md
-- docs/tasks/task1.md
-- docs/tasks/task2.md
-- docs/data/sources.md
-- docs/data/object_model.md
-- docs/metrics/concordance.md
-- docs/metrics/retrieval.md
-- docs/metrics/aggregation.md
-
-Figure numbers are manuscript organization. They do not determine where data
-preprocessing, task logic, or metric definitions are maintained.
+This file maps PerturbLens scientific questions to main figures. Figure numbering organizes presentation; executable definitions remain in `docs/data/`, `docs/tasks/`, and `docs/metrics/`.
 
 ## Main Figure Roles
 
-| Figure | Role | Evidence family |
+| Figure | Main Result | Role |
 | --- | --- | --- |
-| Figure 1 | Benchmark definition, workflow, and lawful comparison scope | Overview schematic |
-| Figure 2 | Task1 main evidence | Modality concordance |
-| Figure 3 | Task2 main evidence | Mechanism concordance |
+| Figure 1 | R1 | PerturbLens framework, data, state/response representations, evaluation layers, boundary ladder |
+| Figure 2 | R2 | Genetic perturbation learnability: inner -> unseen context -> unseen target |
+| Figure 3 | R3 | Chemical perturbation learnability: inner -> context -> compound -> target; dose/time covariates |
+| Figure 4 | R4 | Chemical-genetic cross-intervention conservation |
+| Figure 5 | R5 | Transcriptomic-morphological cross-readout conservation |
+| Figure 6 | R6 | Combination compositionality and interaction residual structure |
 
-Task1 and Task2 remain separate in the main text. Gene and Pathway are the
-benchmark-wide representation spaces. FM appears in the main manuscript only
-through the scPerturb/K562 Figure 3F local-only panel.
+No figure is evidence by itself. Every panel requires a versioned task/result table and validation chain.
 
-## Figure 1
+## Figure 1 — Framework
 
-Figure 1 is the benchmark overview. It defines the two scenario questions,
-shows how shared sources become task-specific lawful units, and summarizes the
-four evaluation views:
+Recommended panel responsibilities:
 
-- Group concordance
-- directional Retrieval
-- Representation comparison across Gene and Pathway
-- ranked Enrichment summaries using pair_mean_enrichment
+- **1A** data/source landscape and coverage;
+- **1B** state representation families: Gene, Pathway, FM, CellProfiler, deep morphology;
+- **1C** response construction: control delta versus Systema-style perturbation-specific reference;
+- **1D** three evaluation layers: population similarity, retrieval, prediction;
+- **1E** boundary ladder: within -> context -> target/compound -> intervention -> readout -> composition.
 
-The controlling visual design is in figures/benchmark_overview.md. The draft
-legend is in manuscript/figure_legends.md and is explicitly not an approved
-result claim.
+R1 should define measurement, not rank representations.
 
-## Figure 2: Task1
+## Figure 2 — Genetic Learnability
 
-Figure 2 carries Task1 main evidence:
+Recommended structure:
 
-- 2A: Task1 lawful-scope composition
-- 2B: Task1 shared matched-unit scoreboard
-- 2C: Task1 internal-to-cross degradation
-- 2D: Task1 paired Gene versus Pathway comparison
-- 2E: Task1 cell-line pattern ranked by pair_mean_enrichment
-- 2F: Task1 perturbation_gene pattern ranked by pair_mean_enrichment
+- inner/replicate information availability;
+- cross-context transfer;
+- unseen-target generalization;
+- breakdown of performance changes by response-information family;
+- selected Gene/Pathway/FM and control/Systema comparisons.
 
-The detailed panel design, data requirements, and interpretation boundaries are
-in figures/task1_results.md. Figure 2 uses n_pairs >= 3 for 2D and support_n
->= 3 for 2E and 2F. FM is not a Figure 2 panel.
+Supplementary figures can carry dataset-, target-family-, intervention-mode-, baseline-, and model-level detail.
 
-## Figure 3: Task2
+## Figure 3 — Chemical Learnability
 
-Figure 3 carries Task2 main evidence:
+Recommended structure:
 
-- 3A: Task2 lawful-scope composition
-- 3B: Task2 performance backbone
-- 3C: Task2 cell-line pattern ranked by pair_mean_enrichment
-- 3D: Task2 anchor_gene pattern ranked by pair_mean_enrichment
-- 3E: Task2 C2G paired Gene versus Pathway comparison
-- 3F: scPerturb/K562 FM local-only absolute-performance panel
+- inner compound response;
+- cross-context transfer;
+- new compound / same target;
+- unseen compound;
+- unseen target;
+- time/dose explanatory analysis.
 
-The detailed panel design, data requirements, and interpretation boundaries are
-in figures/task2_results.md. Figure 3 uses C2G as the first Task2 retrieval
-direction and G2C as the second direction, n_pairs >= 3 for 3E, support_n
->= 3 for 3C and 3D, and the approved scPerturb/K562 scope only for 3F.
+The main figure should visually distinguish compound novelty from target novelty.
+
+## Figure 4 — Cross-Intervention Conservation
+
+Recommended structure:
+
+- target-matched chemical/genetic population similarity;
+- C2G and G2C retrieval;
+- within-intervention learnability versus cross-intervention conservation map;
+- biological-resolution comparison across Gene/Pathway/FM where lawful;
+- selected context/target patterns.
+
+Legacy Task2 outputs may contribute only after alignment to the new R4 contract.
+
+## Figure 5 — Cross-Readout Conservation
+
+Recommended structure:
+
+- transcriptomic versus morphology response strength;
+- perturbation-geometry correspondence;
+- cross-modal retrieval;
+- cross-modal prediction;
+- intervention x readout 2 x 2 analysis;
+- shared versus readout-specific response structure.
+
+The intervention x readout analysis is the highest-priority scientific differentiator and should receive main-panel space if data coverage supports it.
+
+## Figure 6 — Combination Compositionality
+
+Recommended structure:
+
+- genetic combination observed versus expected response;
+- chemical combination observed versus expected response;
+- interaction residual structure;
+- simple compositional baselines versus specialized prediction models;
+- cross-representation or cross-modal residual conservation where available.
+
+Do not label a non-zero residual as synergy without an explicitly appropriate biological null and supporting evidence.
 
 ## Shared Plot Workflow
 
-The panel workflow is:
+1. A versioned task produces audited tables and manifests.
+2. Python prepares panel-level summaries from lawful rows and pre-approved statistics.
+3. R or another rendering layer performs ordering/composition without redefining statistics.
+4. Review checks panel scope, denominators, representation, response view, split identity, and evidence provenance.
 
-1. An approved task analysis produces source tables and manifests.
-2. Python selects lawful rows, computes approved panel summaries, joins
-   approved significance information, applies thresholds, and writes
-   plot-ready tables.
-3. R reads those tables, applies ordering and visual composition, and exports
-   the final panels.
-4. Review checks the rendered panel against the panel definition, manifest,
-   denominator fields, and draft or approved legend.
+## Supplementary Philosophy
 
-The workflow does not permit R to recompute panel-defining statistics. Shared
-requirements are in visualization/standards.md.
+Use supplementary figures for robustness and breadth:
 
-## Panel Cross-References
+- alternative pathway libraries;
+- additional FM/image encoders;
+- metric sensitivity;
+- distributional analyses;
+- dose/time strata;
+- batch/plate/source effects;
+- target annotation confidence;
+- detailed model leaderboards.
 
-Each panel document must state:
-
-- the question the panel addresses;
-- the task and analysis family;
-- the exact plot-ready input family;
-- the lawful scope and denominator cues;
-- the inclusion threshold, when applicable;
-- the visual encoding and ordering rule;
-- the conclusion boundary;
-- the evidence and legend status.
-
-The panel document may summarize these items but must link to the authoritative
-task, data, and metric documents rather than restating their full contracts.
-
-## Figure And Manuscript Handoff
-
-The manuscript outline and writing requirements are in:
-
-- docs/manuscript/outline.md
-- docs/manuscript/writing_standards.md
-- docs/manuscript/figure_legends.md
-
-Figure legends describe what is shown and how it was computed at the level
-needed to interpret the panel. They do not introduce a claim unsupported by
-the task output or evidence record.
+Main figures should remain organized around scientific questions, not exhaustive representation/model combinations.

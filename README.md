@@ -1,54 +1,42 @@
-# M2M-Bench
+# PerturbLens
 
-M2M-Bench is a benchmark for transcriptome-centered perturbation-response
-concordance. Its approved scope is defined in [the project document](docs/project.md).
+PerturbLens is a response-centric study of cellular perturbations. It characterizes what perturbation-response information is reproducible, learnable, transferable across cellular contexts and targets, conserved across intervention and readout modalities, and compositional under combined perturbations.
 
-## Core Scope
+The repository retains the historical `M2M-Bench` GitHub/package identifiers during migration so existing scripts, NAS paths, and audited artifacts remain traceable. The scientific project name and active study definition are now **PerturbLens**.
 
-- `Task1`: modality concordance with `perturbation_type` held fixed.
-- `Task2`: mechanism concordance between chemical and genetic cohorts inside one
-  dataset.
-- `Gene` and `Pathway` are the benchmark-wide representation spaces.
-- `FM` enters the main manuscript only through the `scPerturb/K562`
-  `Figure 3F` local-only panel.
-- Figure 1 defines the benchmark.
-- Figure 2 carries Task1 main evidence.
-- Figure 3 carries Task2 main evidence.
-- Task1 and Task2 stay separate in the main text.
+## Scientific Spine
+
+The study separates four layers:
+
+1. **Data** — perturbations, cellular contexts, readout modalities, dose/time, and combinations.
+2. **State representation** — Gene, Pathway, transcriptomic FM embeddings, CellProfiler morphology features, and deep morphology embeddings.
+3. **Response construction** — control-referenced delta and a Systema-style perturbation-specific reference view.
+4. **Evaluation** — population similarity, instance retrieval, and out-of-sample model prediction.
+
+The main biological-boundary ladder is:
+
+`within -> cellular context -> target/compound -> intervention modality -> readout modality -> composition`
+
+## Main Result Architecture
+
+- **R1**: framework, data, representations, response construction, and evaluation definitions.
+- **R2**: genetic response learnability from inner splits to unseen contexts and unseen targets.
+- **R3**: chemical response learnability from inner splits to unseen contexts, unseen compounds, and unseen targets; dose/time are explanatory covariates.
+- **R4**: chemical-genetic response conservation across intervention modalities.
+- **R5**: transcriptomic-morphological response conservation across readout modalities.
+- **R6**: compositionality and interaction structure under combined perturbations.
 
 ## Start Here
 
-- `AGENTS.md`
-- `docs/README.md`
-- `docs/project.md`
-- `docs/roadmap.md`
-- `docs/governance/state.md`
-- `docs/governance/runbook.md`
-- `docs/tasks/task1.md`
-- `docs/tasks/task2.md`
-- `docs/tasks/output_schemas.md`
-- `docs/visualization/figure_plan.md`
-- `docs/manuscript/outline.md`
-- `docs/manuscript/figure_legends.md`
+- [Documentation index](docs/README.md)
+- [Project definition](docs/project.md)
+- [Research proposal](docs/research/proposal.md)
+- [Literature landscape and competitive position](docs/research/landscape.md)
+- [Result architecture](docs/research/result_architecture.md)
+- [Task/result migration map](docs/tasks/study_map.md)
+- [Roadmap](docs/roadmap.md)
+- [Project state](docs/governance/state.md)
 
-## Active Roots
+## Migration Boundary
 
-The [storage policy](docs/governance/storage_policy.md) defines the NAS-backed
-data, run, manuscript-analysis, and plot-export roots.
-
-## Repo Layout
-
-- `docs/`: project definition and roadmap, plus task, data, metric,
-  visualization, manuscript, governance, and history domains
-- `.agents/skills/`: repo-scoped operating workflows
-- `scripts/fm_extractors/`: FM extraction utilities
-
-## Local Checkout
-
-The local checkout is source-only. Audited data, stage outputs, and manuscript
-analysis live on NAS-backed roots.
-
-Some Task1 preparation interfaces documented here currently exist only in the
-local development working tree. See [project state](docs/governance/state.md)
-for the distinction between published source, local implementation, and
-validated evidence.
+Existing Task1/Task2 contracts, outputs, scripts, and NAS paths are not silently reinterpreted. They remain valid for the historical M2M execution core until each analysis is migrated into a PerturbLens result contract. New morphology, expanded FM, model-prediction, and combination analyses require their own data/task/metric contracts before production execution.

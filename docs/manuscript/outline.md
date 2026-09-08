@@ -2,119 +2,98 @@
 
 ## Current Paper Shape
 
-M2M-Bench is a benchmark/evaluation paper for transcriptome-centered
-perturbation-response concordance. The current main-text sequence is:
+PerturbLens is a response-centric characterization study of cellular perturbation information. The manuscript is organized by biological boundaries rather than by model family or legacy Task number.
 
-1. benchmark definition and scope;
-2. Task1 modality-concordance evidence;
-3. Task2 mechanism-concordance evidence; and
-4. discussion of evidence boundaries, limitations, and future work.
+The current main-text sequence is:
 
-Figure 1 defines the benchmark. Figure 2 presents Task1 main evidence. Figure 3
-presents Task2 main evidence. Task1 and Task2 remain separate in the main text.
-FM enters the main manuscript only through the scPerturb/K562 Figure 3F
-local-only panel.
+1. R1 framework and measurement definition;
+2. R2 genetic response learnability;
+3. R3 chemical response learnability;
+4. R4 chemical-genetic cross-intervention conservation;
+5. R5 transcriptomic-morphological cross-readout conservation;
+6. R6 combination compositionality;
+7. discussion of the hierarchy of response-information conservation and evidence boundaries.
 
-This is an outline of argument responsibilities, not a draft of results. It
-must not contain invented effect sizes, sample counts, citations, or final
-claims.
+This outline defines argument responsibilities. It must not contain invented numerical results.
 
 ## Argument Spine
 
-The manuscript should connect:
+```text
+research question
+  -> state representation
+  -> response construction
+  -> biological boundary
+  -> geometry / retrieval / prediction evidence
+  -> bounded interpretation
+```
 
-research question -> task definition -> lawful data object -> approved metric
-and analysis -> audited evidence -> bounded interpretation
+The repeated question across Results is:
 
-The project-level question and current contribution boundary are defined in
-docs/project.md. Future candidates remain in docs/roadmap.md and must not be
-written as current evidence.
+> Which perturbation-response information survives the next biological boundary?
 
 ## Section Responsibilities
 
 ### Title And Abstract
 
-Identify the benchmark and the perturbation-response concordance problem. The
-abstract should state the evaluation gap, introduce the two task families at a
-high level, and summarize only results supported by audited outputs. Do not
-include unverified numerical or priority claims.
+Position PerturbLens as a response-centric study rather than a model leaderboard. State only claims supported by validated outputs.
 
 ### Introduction
 
-Establish the field context, identify the evaluation gap, explain why
-modality- and mechanism-concordance questions matter, and motivate a benchmark
-that keeps the two task families explicit. End by defining the current scope
-and the evidence sequence without presenting future roadmap items as completed
-work.
+Motivate the gap between virtual-cell prediction performance and understanding of what response information is actually stable, specific, transferable, cross-modal, and compositional. Establish that strong baselines, response decomposition, cross-context prediction, multimodal profiling, and combination prediction already have substantial precedent; end with the boundary-conservation question that unifies PerturbLens.
 
 ### Methods
 
-Methods should introduce the data sources and object model before describing
-Task1 and Task2. It should then define:
+Methods should define, in order:
 
-- lawful task units and matching;
-- Gene and Pathway representation handling;
-- the approved Group and directional retrieval analyses;
-- metrics, aggregation, and chance correction;
-- validation and evidence traceability; and
-- the restricted scope of the FM representation.
+1. data sources and comparison metadata;
+2. state representations;
+3. response construction, including control and Systema-style reference views;
+4. lawful task/generalization splits;
+5. population similarity;
+6. instance retrieval;
+7. model prediction metrics and baselines;
+8. inference, aggregation, validation, and evidence traceability.
 
-Authoritative details belong in docs/data/, docs/tasks/, docs/metrics/, and
-docs/governance/. The manuscript should cite or link those records as the
-project's internal source of truth.
+Authoritative formulas and units belong in `docs/data/`, `docs/tasks/`, and `docs/metrics/`.
 
-### Results: Benchmark Definition
+### Results 1 — Framework
 
-Use Figure 1 to introduce the scenarios, data object construction, shared
-representation context, and four readout families. The prose should explain
-the benchmark question rather than treat the schematic's pseudo-visualization
-cues as result evidence.
+Define what is measured and compared. Introduce data, representation families, response views, evaluation layers, and the boundary ladder. Do not turn R1 into a representation leaderboard.
 
-### Results: Task1
+### Results 2 — Genetic Learnability
 
-Use Figure 2 to present Task1 lawful scope, shared matched-unit evidence,
-internal-to-cross comparison, Gene versus Pathway comparison, and the two
-ranked pattern views. Keep internal and cross settings distinct. State
-thresholds and support where the corresponding panels exclude low-support
-surfaces or entities.
+Present inner/replicate, cross-context, and unseen-target settings. Emphasize what response information is lost or retained rather than only the change in aggregate prediction score.
 
-### Results: Task2
+### Results 3 — Chemical Learnability
 
-Use Figure 3 to present Task2 lawful scope, performance backbone, ranked
-cell-line and anchor_gene patterns, and the C2G Gene versus Pathway comparison.
-Keep C2G and G2C separate. Present Figure 3F only as the approved
-scPerturb/K562 FM local comparison and do not generalize it to other panels or
-datasets.
+Present inner compound, cross-context, cross-compound/same-target, unseen-compound, and unseen-target settings. Time and dose are explanatory covariates and sensitivity analyses unless a future dense design justifies a dedicated dynamic Result.
+
+### Results 4 — Cross-Intervention Conservation
+
+Use the Chem2Gen lineage to ask what target-linked response information survives switching between chemical and genetic intervention. Integrate within-intervention learnability from R2/R3 with C2G/G2C geometry/retrieval.
+
+### Results 5 — Cross-Readout Conservation
+
+Compare transcriptomic and morphology response structure. The highest-priority synthesis is the intervention x readout map, asking whether chemical-genetic conservation itself is conserved across readout modalities.
+
+### Results 6 — Combination Compositionality
+
+Use genetic and chemical combinations as a final stress test. Compare observed combinations against strong constituent-based nulls and determine whether residual response information is stable and structured.
 
 ### Discussion
 
-Interpret the observed evidence within the active data and task boundaries.
-Separate what is observed from why it may have occurred. Discuss limitations
-that affect matching, support, representation coverage, dataset or cell-line
-generalization, and the separation of Task1 from Task2. Tie future work to
-specific entries in docs/roadmap.md.
+Synthesize the boundary ladder rather than recap model rankings. Discuss which response information appears robust at which biological resolution, where it becomes intervention- or readout-specific, and where combination responses exceed single-perturbation structure. Separate descriptive evidence from causal explanation.
 
 ## Figure And Table Handoff
 
-The current figure responsibilities are maintained in
-docs/visualization/figure_plan.md and the panel documents under
-docs/visualization/figures/. The current draft legends are maintained in
-docs/manuscript/figure_legends.md.
-
-Each result paragraph should be traceable to an approved plot-ready table or
-other audited output through the task evidence index and governance state. A
-figure reference alone is not evidence provenance.
+The current main-figure roles are maintained in `docs/visualization/figure_plan.md`. Each Result must consume versioned task outputs and retain representation, response view, denominators, split identity, and evidence provenance.
 
 ## Writing Sequence
 
-The current drafting order is:
-
-1. stabilize project, task, data, and metric definitions;
-2. assemble the methods argument from those definitions;
-3. write results around audited Task1 and Task2 outputs;
-4. write the discussion with explicit limitations and evidence boundaries; and
-5. perform terminology, quantitative consistency, claim-strength, and
-   figure-legend checks.
-
-The exact journal-specific article structure remains deferred. No submission
-scaffold is created by this outline.
+1. stabilize response, metric, and task definitions;
+2. complete R2/R3 backbone analyses;
+3. migrate/extend R4 Chem2Gen evidence;
+4. contract and execute R5 multimodal analyses;
+5. contract and execute R6 combination analyses;
+6. write Results around validated evidence;
+7. synthesize the hierarchy of response-information conservation in Discussion.

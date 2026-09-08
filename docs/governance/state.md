@@ -1,47 +1,72 @@
-# M2M-Bench Project State
+# PerturbLens Project State
 
-Last updated: 2026-09-06
+Last updated: 2026-09-08
 
-## Role And Approved Scope
+## Scientific Reframing
 
-This page records current work and unresolved requirements. Approved scope is
-defined by [project](../project.md), [Task1](../tasks/task1.md), and
-[Task2](../tasks/task2.md). Research extensions belong in the
-[roadmap](../roadmap.md).
+The human lead approved reframing the project from the Task1/Task2-centered M2M-Bench benchmark into **PerturbLens**, a response-centric study of cellular perturbation information across biological boundaries.
 
-## Documentation And Implementation Status
+The active scientific architecture is now:
 
-- The human lead approved the domain-based documentation architecture and
-  publication of the migration. See the
-  [decision](../history/decisions/2026-09-06_documentation_architecture.md) and
-  [changelog](../history/CHANGELOG.md) for its scope and checks.
-- Existing Task1 source preparation, snapshot, and FM contracts are retained.
-  Their presence does not certify that a final snapshot or downstream analysis
-  has passed validation.
-- The local working tree contains Task1 preparation/merge scripts and their
-  tests that are not part of the published baseline. This documentation release
-  does not publish that unrelated implementation work. Runtime contracts may
-  therefore describe local interfaces not yet available in the GitHub checkout.
-- The `S0` to `S7` mapping in the [runbook](runbook.md) is an execution
-  crosswalk, not a statement that those stages have completed.
-- Consult the [evidence index](../tasks/evidence_index.md) for specific checked
-  artifacts and the limits of those checks. The migration itself does not
-  establish benchmark performance or manuscript readiness.
+```text
+R1 framework
+R2 genetic learnability
+R3 chemical learnability
+R4 cross-intervention chemical/genetic conservation
+R5 cross-readout transcriptomics/morphology conservation
+R6 combination compositionality
+```
 
-## Unresolved Work
+The three shared evaluation families are population similarity, instance retrieval, and model prediction. Primary state-representation families are Gene/Pathway/FM for transcriptomics and CellProfiler/deep embeddings for morphology. Primary response views are control delta and a Systema-style perturbed reference.
 
-| Item | Controlling owner | Current boundary |
-| --- | --- | --- |
-| Exhaustive source audit-column inventories and richer artifact audits | [Task1 snapshot](../data/snapshots/task1.md) and source preparation documents | Core structure and minimum extraction mapping are retained; exhaustive detail is not frozen |
-| Additional model-specific QC sidecars | [FM representation](../data/representations/fm.md) | Instance keys, pairing handoff, minimum files, and existing acceptance gate remain defined; broader sidecars are not approved by this migration |
-| Task-specific statistical procedures and remaining numerical edge rules | [Task1](../tasks/task1.md), [Task2](../tasks/task2.md), and metric documents | Record missing definitions before implementation; do not fill them with unapproved defaults |
-| Task1 group-table key sufficiency | [Output schemas](../tasks/output_schemas.md) | The inherited `task1_group_concordance_long.csv` key omits `cell_line` although the task unit includes it; assess uniqueness for multi-cell-line outputs and approve any schema revision separately |
-| Figure 2 panel-ready interfaces and downstream exports | [Task1 results design](../visualization/figures/task1_results.md) | Detailed 2A twin-panel csv/json handoff and downstream export preparation remain unresolved |
-| Panel-level R scripts | [Figure plan](../visualization/figure_plan.md) | Figure roles and current thresholds are retained; the migration does not certify rendering implementation |
+See [project](../project.md), [proposal](../research/proposal.md), [result architecture](../research/result_architecture.md), and [study map](../tasks/study_map.md).
 
-## Storage And Evidence
+## Migration Status
 
-The [storage policy](storage_policy.md) owns the canonical data and run roots.
-The checkout remains source-only. Do not infer stage completion from a path
-listed in that policy, or use documentation updates as substitutes for audited
-run evidence.
+### Completed in the current reframing change
+
+- PerturbLens scientific scope and R1-R6 manuscript logic documented.
+- Literature/ecosystem analysis added with current competitive risks.
+- `docs/research/` introduced as a research-rationale domain.
+- Shared response-construction and prediction-evaluation vocabularies introduced.
+- Legacy Task1/Task2 mapped to the new Result architecture without changing their existing output semantics.
+
+### Retained legacy execution core
+
+Existing Task1/Task2 contracts, scripts, schemas, runbook stages, NAS paths, and historical artifacts remain valid under their original meanings.
+
+No existing `task1_*` or `task2_*` file is automatically a PerturbLens result. Reuse requires an explicit alignment proof or a new task contract.
+
+The repository/package/storage identifiers containing `M2M` or `m2mbench` are retained during migration for provenance and implementation compatibility. Scientific naming has changed before source/storage renaming.
+
+## Not Yet Implemented Or Verified
+
+The following are approved research directions but **not completed analyses**:
+
+- R2 unseen-context and unseen-target prediction tasks;
+- R3 new-compound, unseen-compound, and unseen-target prediction tasks;
+- VCC2026/Cell-Eval2 prediction metric implementation in this repository;
+- task-specific legal Systema reference pools across all result families;
+- morphology data ingestion, CellProfiler extraction, deep image embeddings, or morphology response contracts;
+- transcriptomic-morphological cross-readout analyses;
+- expanded FM manuscript coverage beyond currently materialized/approved legacy surfaces;
+- genetic or chemical combination task contracts and interaction nulls;
+- new PerturbLens result tables, figures, or numerical claims.
+
+Documentation presence is not evidence of execution.
+
+## Immediate Work Queue
+
+1. Freeze task-specific response-construction semantics and Systema reference pools.
+2. Freeze the Cell-Eval2/VCC2026 version and morphology metric analogues.
+3. Build a source/coverage inventory for R2, R3, R5, and R6.
+4. Write executable task contracts for genetic and chemical learnability.
+5. Verify which legacy Task1/Task2 outputs can lawfully feed R2-R4.
+6. Select and contract morphology sources before implementing R5.
+7. Select combination sources and null models before implementing R6.
+
+## Evidence Boundary
+
+The existing [evidence index](../tasks/evidence_index.md) remains authoritative for legacy Task1/Task2 evidence. New PerturbLens evidence entries must point to task contracts, split manifests, response-construction versions, metric versions, result tables, and validation assertions.
+
+No benchmark performance or manuscript conclusion is certified by the reframing itself.

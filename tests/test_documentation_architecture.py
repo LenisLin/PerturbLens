@@ -7,6 +7,7 @@ from urllib.parse import unquote, urlsplit
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DOCS_ROOT = REPO_ROOT / "docs"
 DOMAINS = {
+    "research",
     "tasks",
     "data",
     "metrics",
@@ -33,7 +34,7 @@ def active_documents() -> list[Path]:
     return sorted(documents)
 
 
-def test_documentation_root_has_three_entries_and_seven_domains() -> None:
+def test_documentation_root_has_three_entries_and_eight_domains() -> None:
     assert {document.name for document in DOCS_ROOT.glob("*.md")} == {
         "README.md",
         "project.md",

@@ -1,65 +1,100 @@
-# M2M-Bench Project Definition
+# PerturbLens Project Definition
 
 ## Research Position
 
-M2M-Bench is a benchmark/evaluation study of transcriptome-centered
-perturbation-response concordance. It asks how consistently perturbation
-signals align under explicitly defined comparison settings.
+PerturbLens is a response-centric characterization study of cellular perturbations. Its primary scientific object is the **perturbation response**, not a specific prediction model or embedding.
 
-## Approved Questions
+The study asks how perturbation-response information is organized and how much of it remains reproducible, identifiable, learnable, transferable, cross-modal, and compositional as biological novelty increases.
 
-- [Task1](tasks/task1.md) evaluates modality concordance with
-  `perturbation_type` held fixed, using internal comparisons and a matched
-  LINCS/scPerturb single-gene genetic cross slice.
-- [Task2](tasks/task2.md) evaluates mechanism concordance between chemical and
-  genetic cohorts inside one dataset, with core metrics within each dataset
-  and cell line.
+## Central Question
 
-These questions remain separate in analysis outputs and in the manuscript.
-Task definitions, membership rules, and comparison units are owned by the task
-documents, not redefined in this overview.
+> What information in cellular perturbation responses is reproducible within perturbation classes, transferable across cellular contexts and targets, conserved across intervention and readout modalities, and compositional under combined perturbations?
 
-## Data And Representation Scope
+The study uses a boundary ladder:
 
-[LINCS and scPerturb](data/sources.md) supply the current data. Benchmark objects
-are delta-space perturbation responses, as defined by the
-[object model](data/object_model.md) and source-specific preparation contracts.
-Data sources, perturbation types, and representation spaces are distinct
-concepts.
+```text
+within
+  -> cellular context
+  -> target / compound
+  -> intervention modality
+  -> readout modality
+  -> composition
+```
 
-Gene and Pathway are the benchmark-wide representation spaces. FM appears in
-the main manuscript only in the scPerturb/K562 Figure 3F local-only panel.
-Preparing FM representations upstream for Task1 does not authorize their use
-in manuscript-facing Figure 2 panels.
+Each boundary adds a stronger biological change. The study does not equate a drop in model score with a single failure mechanism; it asks which response information is lost or retained at each boundary.
 
-## Study Structure
+## Four-Layer Analysis Framework
 
-Tasks define comparisons and their analysis requirements. Data contracts define
-the input objects and transformations. Metric contracts define calculations.
-Validation and the [evidence index](tasks/evidence_index.md) connect analysis
-requirements to actual runs and results. Visualization and manuscript documents
-consume those results without changing benchmark semantics.
+### 1. Data
 
-The [figure plan](visualization/figure_plan.md) retains the current assignments:
-Figure 1 defines the benchmark, Figure 2 presents Task1, and Figure 3 presents
-Task2. Those assignments do not determine ownership of method documents.
+Current transcriptomic sources are LINCS and scPerturb. Candidate extensions include matched transcriptomic-morphological perturbation resources and genetic/chemical combination datasets. Candidate sources do not enter production scope until a data contract is approved.
 
-## Contribution And Claim Boundaries
+Dose and time are retained as explanatory covariates for chemical analyses unless a future dense dose-time design justifies a dedicated dynamic task.
 
-The intended contribution is a defined and auditable evaluation framework for
-these concordance questions. Whether particular representations or settings
-perform differently must be established by the task evidence, not assumed from
-the project design.
+### 2. State Representation
 
-Benchmark concordance alone does not establish causal mechanism equivalence
-or clinical utility. Claims remain bounded by the evaluated datasets, cell
-backgrounds, perturbations, representations, and valid comparison scope.
-Missing or incomplete evidence is reported as such.
+Primary transcriptomic families:
 
-## Changes To Scope
+- `Gene`
+- `Pathway`
+- transcriptomic foundation-model (`FM`) embeddings
 
-The [roadmap](roadmap.md) holds candidate extensions. A proposed dataset,
-analysis, representation scope, or task becomes active only after the relevant
-scientific decision and contract revision are approved. The current
-[state](governance/state.md) distinguishes approved design from implementation
-and verified evidence.
+Primary morphology families:
+
+- interpretable CellProfiler-derived morphology features
+- fixed deep morphology embeddings
+
+A representation is an observation lens. No representation is assumed to be a complete or privileged description of biological state.
+
+### 3. Response Construction
+
+Primary response views:
+
+- control-referenced delta response;
+- Systema-style perturbation-specific reference response.
+
+The response-construction contract is maintained in [data/response_construction.md](data/response_construction.md). These views are not interchangeable: the control view measures total perturbation-associated displacement, whereas the Systema-style view emphasizes perturbation-specific structure relative to the average perturbed state.
+
+### 4. Evaluation
+
+Three evidence families are used throughout the study:
+
+- **population similarity**: whether two response structures are geometrically similar;
+- **instance retrieval**: whether response identity/specificity is retained;
+- **model prediction**: whether response information can be learned out of sample under a declared generalization regime.
+
+Metric ownership remains in `docs/metrics/`.
+
+## Main Result Architecture
+
+- **R1 — Framework**: data, state representations, response construction, comparison units, and evaluation definitions.
+- **R2 — Genetic learnability**: inner split -> cross-cellular-context -> cross-target.
+- **R3 — Chemical learnability**: inner split -> cross-context -> cross-compound/same-target -> unseen compound -> unseen target; dose/time as explanatory covariates.
+- **R4 — Cross-intervention**: chemical-genetic conservation of target-linked response information.
+- **R5 — Cross-readout**: transcriptomic-morphological conservation, shared geometry, cross-modal retrieval/prediction, and modality-specific response structure.
+- **R6 — Combination**: compositionality, interaction residuals, and response components not explained by constituent single perturbations.
+
+The detailed manuscript logic is maintained in [research/result_architecture.md](research/result_architecture.md).
+
+## Relationship To M2M-Bench
+
+M2M-Bench is the historical execution core from which PerturbLens grows.
+
+- Retained Task1 provides existing within-source and cross-source concordance infrastructure.
+- Retained Task2 provides the current chemical-genetic target-matched comparison infrastructure.
+- Existing Task1/Task2 outputs keep their original semantics and names.
+- New generalization, prediction, morphology, cross-readout, expanded-FM, and combination analyses require explicit PerturbLens contracts.
+
+The mapping is maintained in [tasks/study_map.md](tasks/study_map.md).
+
+## Contribution Boundary
+
+PerturbLens is not primarily a new virtual-cell predictor and is not a representation leaderboard. Its intended contribution is a common response-centric framework for asking what biological information survives increasingly difficult boundaries.
+
+A successful study may contain positive, negative, or uncertain findings. The framework does not assume that response structure is low-dimensional, that chemical and genetic interventions are equivalent, that transcriptomics and morphology encode the same biology, or that combination responses are additive.
+
+## Claim Boundary
+
+Similarity does not establish causal mechanism equivalence. Cross-modal correspondence does not establish an RNA-to-morphology causal mapping. A learned embedding is not treated as the true cellular state. A combination residual is not automatically molecular synergy. Model performance is not treated as an absolute information-theoretic ceiling.
+
+Claims remain bounded by the datasets, representations, response constructions, legal comparison units, evaluation protocols, and evidence actually used.
