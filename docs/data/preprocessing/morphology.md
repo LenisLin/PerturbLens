@@ -4,6 +4,13 @@
 
 This contract defines the minimum processing requirements for R5/R6 morphology sources. A source-specific appendix is required once a concrete imaging dataset is frozen.
 
+Apply the [frozen workflow](../workflow.md), [object schema](../object_model.md),
+[matrix/image semantics](../matrix_semantics.md) and [manifest](../manifests.md)
+contracts. Intake inventories images, metadata and precomputed profiles/embeddings
+separately. High-cost external profiles may be adopted after provenance, feature,
+row-level and fit-scope validation; a profile-only source does not establish image
+availability. Full extraction is not an intake operation.
+
 ## Required inputs
 
 - raw or normalized perturbational images;
@@ -47,7 +54,10 @@ The encoder must not be trained on the exact downstream positive relation and th
 
 ## Matching tier
 
-Every morphology condition is assigned an R5 matching tier from `docs/data/sources.md`. Cross-readout claims preserve the tier in outputs.
+Every cross-readout link is assigned an R5 matching tier under
+[shared relations](../relations.md). A morphology condition can have different
+tiers for different RNA counterparts, or no counterpart; tier is not an intrinsic
+condition label. Cross-readout claims preserve the selected links and tiers.
 
 ## Outputs
 
@@ -57,3 +67,9 @@ Every morphology condition is assigned an R5 matching tier from `docs/data/sourc
 - deep-embedding matrix and index when requested;
 - QC/exclusion table;
 - state-build manifest.
+
+Keep prepared image/metadata/QC assets separate from CellProfiler and
+DeepMorphology state builds. Their row/feature indices and cell-image-well
+membership follow the matrix contract. Plate/control normalization records its
+fit scope and exact allowed units; field/cell counts do not replace independent
+well/biological-replicate support.

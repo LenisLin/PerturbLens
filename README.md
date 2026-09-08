@@ -40,6 +40,14 @@ Shared evidence families:
 
 ## Start here
 
+Canonical repository: `https://github.com/LenisLin/PerturbLens`.
+
+```bash
+git clone git@github.com:LenisLin/PerturbLens.git
+cd PerturbLens
+python -m pip install -e ".[dev]"
+```
+
 - `AGENTS.md`
 - `docs/README.md`
 - `docs/project.md`
@@ -62,3 +70,11 @@ Shared evidence families:
 - `src/perturblens/`: project Python package surface
 
 Derived data and run artifacts do not live in the source checkout.
+
+See [the extractor interface status](scripts/fm_extractors/README.md) before
+using the retained FM utilities. Their legacy snapshot CLIs are not R2-R6
+production runners.
+
+Local pre-reset implementation work, when present, is preserved separately in
+the Git-ignored `.local/legacy-pre-perturblens/` tree. It is not part of the
+active package, test suite, or scientific evidence.

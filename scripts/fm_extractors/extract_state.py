@@ -32,7 +32,10 @@
 # Last Updated: 2026-03-05
 
 """
-Task2 STATE FM extractor with strict row-preservation contract:
+PerturbLens STATE utilities with a legacy snapshot CLI.
+
+The standalone Task2 CLI preserves the historical K562 delta interface, not
+the current R2-R6 run contracts. Its row-preservation contract is:
 
 1) Output fm_delta.npy must have exactly N rows where N = len(delta_meta).
 2) Row i always corresponds to delta_meta row_id i (contiguous 0..N-1 required).
@@ -50,7 +53,9 @@ import argparse
 import csv
 import gc
 import hashlib
+import importlib.util
 import json
+import os
 import random
 import shlex
 import subprocess
@@ -72,10 +77,26 @@ CONFIG_PATH = Path("config/config.yaml")
 EXPECTED_TASK2_SNAPSHOT = Path("data/task2_snapshot_v1")
 GLOBAL_SEED = 619
 MAX_COUNTEREXAMPLES = 5
+STATE_RUNTIME_MODULES = (
+    "anndata",
+    "omegaconf",
+    "antlr4",
+    "geomloss",
+    "lightning",
+    "lightning_utilities",
+    "numpy",
+    "pandas",
+    "state",
+    "torch",
+    "torchmetrics",
+    "yaml",
+)
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Task2 K562 STATE FM delta extractor")
+    parser = argparse.ArgumentParser(
+        description="PerturbLens STATE utilities: legacy K562 snapshot CLI, not an R2-R6 runner"
+    )
     parser.add_argument("--project-root", type=Path, default=Path("."))
     parser.add_argument("--run-id", required=True)
     parser.add_argument("--seed", type=int, default=None)
@@ -89,7 +110,13 @@ def parse_args() -> argparse.Namespace:
         "--state-cmd",
         type=str,
         default=None,
-        help="STATE executable prefix (for example: 'state' or 'uv run state')",
+        help="STATE executable prefix (runtime uv commands are not allowed)",
+    )
+    parser.add_argument(
+        "--state-python",
+        type=Path,
+        default=None,
+        help="Python executable for the dedicated STATE runtime environment",
     )
     parser.add_argument("--checkpoint", type=Path, default=None)
     parser.add_argument("--embed-key", type=str, default=None)
@@ -183,19 +210,133 @@ def is_oom_text(text: str) -> bool:
     )
 
 
+def reject_uv_state_cmd(state_cmd: str) -> None:
+    parts = shlex.split(str(state_cmd))
+    if parts and Path(parts[0]).name == "uv":
+        raise ValueError(
+            "uv-based STATE runtime commands are disabled. uv may be used only to create or "
+            "maintain a dedicated STATE environment; run STATE with state_cmd='state' and "
+            "--state-python pointing at that environment's python executable."
+        )
+
+
+def _pythonpath_env_with_prefix(pythonpath_prefix: Path | str | None) -> dict[str, str]:
+    env = os.environ.copy()
+    if pythonpath_prefix is not None:
+        prefix_text = str(Path(str(pythonpath_prefix)).resolve())
+        current = env.get("PYTHONPATH", "").strip()
+        env["PYTHONPATH"] = prefix_text if not current else os.pathsep.join([prefix_text, current])
+    return env
+
+
+def missing_state_runtime_modules(
+    *,
+    python_executable: Path | str | None = None,
+    pythonpath_prefix: Path | str | None = None,
+) -> list[str]:
+    if python_executable is not None and Path(str(python_executable)).absolute() != Path(sys.executable).absolute():
+        script = (
+            "import importlib.util, json, sys; "
+            "mods=json.loads(sys.argv[1]); "
+            "print(json.dumps([m for m in mods if importlib.util.find_spec(m) is None]))"
+        )
+        result = subprocess.run(
+            [str(python_executable), "-c", script, json.dumps(list(STATE_RUNTIME_MODULES))],
+            capture_output=True,
+            text=True,
+            env=_pythonpath_env_with_prefix(pythonpath_prefix),
+        )
+        if result.returncode != 0:
+            raise RuntimeError(
+                "STATE runtime dependency preflight failed while invoking "
+                f"{python_executable}: {((result.stderr or '') + (result.stdout or '')).strip()}"
+            )
+        return list(json.loads(result.stdout or "[]"))
+
+    inserted = False
+    prefix_text = None
+    if pythonpath_prefix is not None:
+        prefix_text = str(Path(str(pythonpath_prefix)).resolve())
+        if prefix_text not in sys.path:
+            sys.path.insert(0, prefix_text)
+            inserted = True
+    try:
+        return [
+            module_name
+            for module_name in STATE_RUNTIME_MODULES
+            if importlib.util.find_spec(module_name) is None
+        ]
+    finally:
+        if inserted and prefix_text is not None:
+            try:
+                sys.path.remove(prefix_text)
+            except ValueError:
+                pass
+
+
+def validate_state_runtime_environment(
+    *,
+    python_executable: Path | str | None = None,
+    pythonpath_prefix: Path | str | None = None,
+) -> None:
+    missing = missing_state_runtime_modules(
+        python_executable=python_executable,
+        pythonpath_prefix=pythonpath_prefix,
+    )
+    runtime_label = str(python_executable) if python_executable is not None else sys.executable
+    if missing:
+        raise RuntimeError(
+            "STATE runtime dependencies are missing from the selected Python environment. "
+            "Use uv only once to create or maintain the dedicated STATE venv, then pass "
+            f"--state-python for runtime. python={runtime_label} missing={missing}"
+        )
+
+
+def resolve_state_python(
+    *,
+    project_root: Path,
+    model_dir: Path,
+    cfg: Mapping[str, object],
+    args: argparse.Namespace,
+) -> tuple[Path | None, str]:
+    raw_value = getattr(args, "state_python", None)
+    source = "cli(--state-python)"
+    if raw_value is None and cfg.get("state_python") is not None:
+        raw_value = str(cfg["state_python"])
+        source = "config.fm_extractors.state.state_python"
+    if raw_value is None and os.environ.get("PERTURBLENS_STATE_PYTHON"):
+        raw_value = os.environ["PERTURBLENS_STATE_PYTHON"]
+        source = "env(PERTURBLENS_STATE_PYTHON)"
+    if raw_value is None:
+        candidate = model_dir.expanduser().absolute() / ".venv/bin/python"
+        if candidate.exists():
+            return candidate, "model_dir/.venv/bin/python"
+        return None, "current_python"
+
+    path = Path(str(raw_value)).expanduser()
+    if not path.is_absolute():
+        path = (project_root / path).absolute()
+    else:
+        path = path.absolute()
+    if not path.exists():
+        raise FileNotFoundError(f"STATE python executable not found: {path}")
+    return path, source
+
+
 def resolve_state_assets(
     *,
     project_root: Path,
     model_dir: Path,
     cfg: Mapping[str, object],
     args: argparse.Namespace,
-) -> tuple[Path, Path, Path | None, str, str, int | None, int, dict[str, str], Path | None]:
+) -> tuple[Path, Path, Path | None, Path | None, str, str, int | None, int, dict[str, str], Path | None]:
     sources: dict[str, str] = {}
     root = model_dir.resolve()
 
     state_cmd = (
         str(args.state_cmd) if args.state_cmd is not None else str(cfg.get("state_cmd", "state"))
     )
+    reject_uv_state_cmd(state_cmd)
     embed_key = (
         str(args.embed_key) if args.embed_key is not None else str(cfg.get("embed_key", "X_state"))
     )
@@ -253,6 +394,16 @@ def resolve_state_assets(
         if checkpoint is not None:
             sources["checkpoint"] = "model_folder/*.ckpt(latest_mtime)"
 
+    config_path: Path | None = None
+    if "config" in cfg and cfg["config"] is not None:
+        config_path = resolve_config_path(project_root, str(cfg["config"]))
+        sources["config"] = "config.fm_extractors.state.config"
+    else:
+        candidate_config = model_folder / "config.yaml"
+        if candidate_config.is_file():
+            config_path = candidate_config.resolve()
+            sources["config"] = "model_folder/config.yaml"
+
     state_cmd_prefix = shlex.split(state_cmd)
     state_cmd_path: Path | None = None
     if state_cmd_prefix:
@@ -264,6 +415,7 @@ def resolve_state_assets(
         root,
         model_folder,
         checkpoint,
+        config_path,
         state_cmd,
         embed_key,
         batch_size,
@@ -302,31 +454,51 @@ def write_state_input_h5ad(
 def run_state_once(
     *,
     state_cmd: str,
+    state_python: Path | str | None = None,
+    pythonpath_prefix: Path | str | None = None,
     model_folder: Path,
     checkpoint: Path | None,
+    config_path: Path | None,
     input_h5ad: Path,
     output_h5ad: Path,
     embed_key: str,
     batch_size: int | None,
 ) -> tuple[bool, str]:
-    cmd = shlex.split(state_cmd) + [
-        "emb",
-        "transform",
-        "--model-folder",
-        str(model_folder),
-        "--input",
-        str(input_h5ad),
-        "--output",
-        str(output_h5ad),
-        "--embed-key",
-        str(embed_key),
-    ]
+    reject_uv_state_cmd(state_cmd)
+    state_cmd_parts = shlex.split(state_cmd)
+    if state_cmd_parts == ["state"]:
+        shim = Path(__file__).resolve().with_name("state_transform_shim.py")
+        cmd = [str(state_python) if state_python is not None else sys.executable, str(shim)]
+    else:
+        cmd = state_cmd_parts + ["emb", "transform"]
+
+    cmd.extend(
+        [
+            "--model-folder",
+            str(model_folder),
+            "--input",
+            str(input_h5ad),
+            "--output",
+            str(output_h5ad),
+            "--embed-key",
+            str(embed_key),
+        ]
+    )
     if checkpoint is not None:
         cmd.extend(["--checkpoint", str(checkpoint)])
+    if config_path is not None:
+        cmd.extend(["--config", str(config_path)])
     if batch_size is not None:
         cmd.extend(["--batch-size", str(int(batch_size))])
 
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    env = None
+    if pythonpath_prefix is not None or state_cmd_parts == ["state"]:
+        env = _pythonpath_env_with_prefix(pythonpath_prefix)
+    if state_cmd_parts == ["state"]:
+        assert env is not None
+        env.setdefault("MPLCONFIGDIR", "/tmp/matplotlib-state")
+
+    result = subprocess.run(cmd, capture_output=True, text=True, env=env)
     if result.returncode == 0:
         return True, ""
 
@@ -382,9 +554,27 @@ def extract_state_aligned(
     return matrix, missing_ids, chosen
 
 
+def extract_state_npy_aligned(
+    *,
+    output_npy: Path,
+    expected_ids: Sequence[str],
+) -> tuple[np.ndarray, list[str], str]:
+    matrix = np.asarray(np.load(output_npy, allow_pickle=False), dtype=np.float32)
+    if matrix.ndim != 2:
+        raise RuntimeError(f"STATE embedding matrix must be 2D, got shape={matrix.shape}")
+    if int(matrix.shape[0]) != len(expected_ids):
+        raise RuntimeError(
+            f"STATE output row count mismatch: observed={matrix.shape[0]} "
+            f"expected={len(expected_ids)}"
+        )
+    return matrix, [], "npy"
+
+
 def run_state_segment_with_retry(
     *,
     state_cmd: str,
+    state_python: Path | str | None = None,
+    pythonpath_prefix: Path | str | None = None,
     model_folder: Path,
     checkpoint: Path | None,
     input_h5ad: Path,
@@ -392,6 +582,7 @@ def run_state_segment_with_retry(
     embed_key: str,
     initial_batch_size: int | None,
     expected_ids: Sequence[str],
+    config_path: Path | None = None,
 ) -> tuple[np.ndarray, int | None, str | None, str | None]:
     batch_size = initial_batch_size if initial_batch_size is not None else None
     last_err: str | None = None
@@ -399,19 +590,28 @@ def run_state_segment_with_retry(
     while True:
         ok, msg = run_state_once(
             state_cmd=state_cmd,
+            state_python=state_python,
+            pythonpath_prefix=pythonpath_prefix,
             model_folder=model_folder,
             checkpoint=checkpoint,
+            config_path=config_path,
             input_h5ad=input_h5ad,
             output_h5ad=output_h5ad,
             embed_key=embed_key,
             batch_size=batch_size,
         )
         if ok:
-            matrix, _missing, used_key = extract_state_aligned(
-                output_h5ad=output_h5ad,
-                expected_ids=expected_ids,
-                embed_key=embed_key,
-            )
+            if output_h5ad.suffix.lower() == ".npy":
+                matrix, _missing, used_key = extract_state_npy_aligned(
+                    output_npy=output_h5ad,
+                    expected_ids=expected_ids,
+                )
+            else:
+                matrix, _missing, used_key = extract_state_aligned(
+                    output_h5ad=output_h5ad,
+                    expected_ids=expected_ids,
+                    embed_key=embed_key,
+                )
             return matrix, batch_size, used_key, None
 
         last_err = msg
@@ -435,8 +635,11 @@ def extract_side_embeddings_state(
     required_cell_ids: Sequence[str],
     gene_symbols: Sequence[str],
     state_cmd: str,
+    state_python: Path | str | None,
+    pythonpath_prefix: Path | str | None,
     model_folder: Path,
     checkpoint: Path | None,
+    config_path: Path | None,
     embed_key: str,
     batch_size: int | None,
     cell_chunk_size: int,
@@ -526,8 +729,11 @@ def extract_side_embeddings_state(
 
                     emb_matrix, used_bs, _used_key, err = run_state_segment_with_retry(
                         state_cmd=state_cmd,
+                        state_python=state_python,
+                        pythonpath_prefix=pythonpath_prefix,
                         model_folder=model_folder,
                         checkpoint=checkpoint,
+                        config_path=config_path,
                         input_h5ad=input_h5ad,
                         output_h5ad=output_h5ad,
                         embed_key=embed_key,
@@ -679,6 +885,7 @@ def main() -> int:
             state_root,
             model_folder,
             checkpoint,
+            state_config_path,
             state_cmd,
             embed_key,
             batch_size,
@@ -688,10 +895,21 @@ def main() -> int:
         ) = resolve_state_assets(
             project_root=project_root, model_dir=model_dir, cfg=fm_cfg, args=args
         )
+        state_pythonpath_prefix = (state_root / "src").resolve() if (state_root / "src").is_dir() else None
+        state_python, state_python_source = resolve_state_python(
+            project_root=project_root,
+            model_dir=model_dir,
+            cfg=fm_cfg,
+            args=args,
+        )
+        validate_state_runtime_environment(
+            python_executable=state_python,
+            pythonpath_prefix=state_pythonpath_prefix,
+        )
     except Exception as exc:  # noqa: BLE001
         assertions.append(
             {
-                "name": "state_assets_resolved",
+                "name": "state_assets_and_runtime_resolved",
                 "pass": False,
                 "details": {"error": str(exc), "model_dir": str(model_dir)},
                 "counterexamples": [{"error": str(exc)}],
@@ -711,10 +929,20 @@ def main() -> int:
                 "state_root": str(state_root),
                 "model_folder": str(model_folder),
                 "checkpoint": str(checkpoint) if checkpoint is not None else "auto(None)",
+                "config_path": str(state_config_path) if state_config_path is not None else "NA",
                 "state_cmd": state_cmd,
                 "embed_key": embed_key,
                 "batch_size": None if batch_size is None else int(batch_size),
                 "cell_chunk_size": int(cell_chunk_size),
+                "state_python": str(state_python) if state_python is not None else sys.executable,
+                "state_python_source": state_python_source,
+                "state_runtime_environment": "dedicated_python"
+                if state_python is not None
+                else "current_python",
+                "pythonpath_prefix": str(state_pythonpath_prefix)
+                if state_pythonpath_prefix is not None
+                else "NA",
+                "uv_policy": "uv_install_once_allowed_runtime_uv_run_disallowed",
                 "asset_sources": asset_sources,
                 "state_cmd_path": str(state_cmd_path) if state_cmd_path is not None else "NA",
             },
@@ -744,6 +972,8 @@ def main() -> int:
     ]
     if checkpoint is not None:
         required_inputs.append(checkpoint)
+    if state_config_path is not None:
+        required_inputs.append(state_config_path)
 
     missing_inputs = [path for path in required_inputs if not path.exists()]
     if missing_inputs:
@@ -777,8 +1007,12 @@ def main() -> int:
     )
     if checkpoint is not None:
         input_paths.append(checkpoint)
+    if state_config_path is not None:
+        input_paths.append(state_config_path)
     if state_cmd_path is not None:
         input_paths.append(state_cmd_path)
+    if state_python is not None:
+        input_paths.append(state_python)
 
     assertions.append(
         {
@@ -984,8 +1218,11 @@ def main() -> int:
                 required_cell_ids=sorted(required_by_side.get(side, set())),
                 gene_symbols=gene_symbols,
                 state_cmd=state_cmd,
+                state_python=state_python,
+                pythonpath_prefix=state_pythonpath_prefix,
                 model_folder=model_folder,
                 checkpoint=checkpoint,
+                config_path=state_config_path,
                 embed_key=embed_key,
                 batch_size=batch_size,
                 cell_chunk_size=cell_chunk_size,
@@ -1159,6 +1396,15 @@ def main() -> int:
             "model_folder": str(model_folder),
             "checkpoint": str(checkpoint) if checkpoint is not None else "auto(None)",
             "state_cmd": state_cmd,
+            "state_python": str(state_python) if state_python is not None else sys.executable,
+            "state_python_source": state_python_source,
+            "state_runtime_environment": "dedicated_python"
+            if state_python is not None
+            else "current_python",
+            "pythonpath_prefix": str(state_pythonpath_prefix)
+            if state_pythonpath_prefix is not None
+            else "NA",
+            "uv_policy": "uv_install_once_allowed_runtime_uv_run_disallowed",
             "embed_key": embed_key,
             "batch_size": None if batch_size is None else int(batch_size),
             "cell_chunk_size": int(cell_chunk_size),
@@ -1199,8 +1445,12 @@ def main() -> int:
     ]
     if checkpoint is not None:
         allowed_roots.append(checkpoint.parent.absolute())
+    if state_config_path is not None:
+        allowed_roots.append(state_config_path.parent.absolute())
     if state_cmd_path is not None:
         allowed_roots.append(state_cmd_path.parent.absolute())
+    if state_python is not None:
+        allowed_roots.append(state_python.parent.absolute())
 
     bad_inputs = [
         str(path.absolute())
@@ -1249,6 +1499,15 @@ def main() -> int:
             "model_folder": str(model_folder),
             "checkpoint": str(checkpoint) if checkpoint is not None else "auto(None)",
             "state_cmd": state_cmd,
+            "state_python": str(state_python) if state_python is not None else sys.executable,
+            "state_python_source": state_python_source,
+            "state_runtime_environment": "dedicated_python"
+            if state_python is not None
+            else "current_python",
+            "pythonpath_prefix": str(state_pythonpath_prefix)
+            if state_pythonpath_prefix is not None
+            else "NA",
+            "uv_policy": "uv_install_once_allowed_runtime_uv_run_disallowed",
             "embed_key": embed_key,
             "batch_size": None if batch_size is None else int(batch_size),
             "cell_chunk_size": int(cell_chunk_size),

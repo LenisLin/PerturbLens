@@ -16,6 +16,11 @@ Primary claims prioritize higher matching tiers. Lower tiers may support broader
 
 A matched unit preserves perturbation/compound identity, target annotation, intervention type/mode, cell context, time/dose compatibility, source, and replicate support.
 
+Persist reusable links under the [shared relation schema](../data/relations.md).
+`same_assay_paired` is an intake alias for canonical `paired_assay`, not a fourth
+tier. The task-selected output retains relation/link IDs and applies this task's
+compatibility and split rules; a reusable link does not bypass them.
+
 ## State representations
 
 Transcriptomics:

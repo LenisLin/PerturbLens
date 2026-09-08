@@ -32,7 +32,10 @@
 # Last Updated: 2026-03-05
 
 """
-Task2 scFoundation FM extractor with strict row-preservation contract:
+PerturbLens scFoundation utilities with a legacy snapshot CLI.
+
+The standalone Task2 CLI preserves the historical K562 delta interface, not
+the current R2-R6 run contracts. Its row-preservation contract is:
 
 1) Output fm_delta.npy must have exactly N rows where N = len(delta_meta).
 2) Row i always corresponds to delta_meta row_id i (contiguous 0..N-1 required).
@@ -74,7 +77,9 @@ MAX_COUNTEREXAMPLES = 5
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Task2 K562 scFoundation FM delta extractor")
+    parser = argparse.ArgumentParser(
+        description="PerturbLens scFoundation utilities: legacy K562 snapshot CLI, not an R2-R6 runner"
+    )
     parser.add_argument("--project-root", type=Path, default=Path("."))
     parser.add_argument("--run-id", required=True)
     parser.add_argument("--seed", type=int, default=None)
@@ -413,7 +418,7 @@ def extract_segment_embedding(
         tmp_dir = Path(tmp)
         h5ad_path = tmp_dir / f"input_{side}_{chunk_tag}_{seg_tag}.h5ad"
         save_path = tmp_dir / "out"
-        task_name = f"m2m_{MODEL_NAME}_{side}_{chunk_tag}_{seg_tag}"
+        task_name = f"perturblens_{MODEL_NAME}_{side}_{chunk_tag}_{seg_tag}"
 
         write_h5ad_for_scfoundation(
             x_csr=x_csr_segment,

@@ -1,5 +1,6 @@
 name: perturblens
 title: PerturbLens
+repository: https://github.com/LenisLin/PerturbLens
 one_liner: Response-centric characterization of cellular perturbation information across context, target, intervention, readout, and combination boundaries.
 domain: Computational biology; perturbation response characterization and virtual-cell evaluation
 stage: See docs/governance/state.md

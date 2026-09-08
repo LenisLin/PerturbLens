@@ -32,7 +32,10 @@
 # Last Updated: 2026-03-05
 
 """
-Task2 UCE FM extractor with strict row-preservation contract:
+PerturbLens UCE utilities with a legacy snapshot CLI.
+
+The standalone Task2 CLI preserves the historical K562 delta interface, not
+the current R2-R6 run contracts. Its row-preservation contract is:
 
 1) Output fm_delta.npy must have exactly N rows where N = len(delta_meta).
 2) Row i always corresponds to delta_meta row_id i (contiguous 0..N-1 required).
@@ -50,6 +53,7 @@ import argparse
 import csv
 import gc
 import hashlib
+import importlib.util
 import json
 import random
 import subprocess
@@ -74,7 +78,9 @@ MAX_COUNTEREXAMPLES = 5
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Task2 K562 UCE FM delta extractor")
+    parser = argparse.ArgumentParser(
+        description="PerturbLens UCE utilities: legacy K562 snapshot CLI, not an R2-R6 runner"
+    )
     parser.add_argument("--project-root", type=Path, default=Path("."))
     parser.add_argument("--run-id", required=True)
     parser.add_argument("--seed", type=int, default=None)
@@ -271,6 +277,64 @@ def resolve_uce_assets(
     )
 
 
+def load_task1_runtime_module(model_root: Path) -> Any:
+    runtime_path = model_root / "task1_runtime.py"
+    if not runtime_path.is_file():
+        raise FileNotFoundError(f"Expected resident UCE runtime at {runtime_path}")
+
+    model_root_str = str(model_root.resolve())
+    inserted = False
+    if model_root_str not in sys.path:
+        sys.path.insert(0, model_root_str)
+        inserted = True
+    try:
+        module_name = f"uce_task1_runtime_{abs(hash(runtime_path.resolve()))}"
+        spec = importlib.util.spec_from_file_location(module_name, runtime_path)
+        if spec is None or spec.loader is None:
+            raise ImportError(f"Unable to load resident UCE runtime from {runtime_path}")
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[module_name] = module
+        spec.loader.exec_module(module)
+        return module
+    finally:
+        if inserted:
+            try:
+                sys.path.remove(model_root_str)
+            except ValueError:
+                pass
+
+
+def build_task1_resident_runtime(
+    *,
+    model_root: Path,
+    model_loc: Path,
+    token_file: Path,
+    protein_embeddings_dir: Path,
+    spec_chrom_csv: Path,
+    offset_pkl: Path,
+    species: str,
+    nlayers: int,
+    sample_size: int,
+    seed: int,
+    device: str,
+) -> tuple[Any, Any]:
+    runtime_module = load_task1_runtime_module(model_root)
+    runtime = runtime_module.build_runtime(
+        model_root=str(model_root),
+        model_loc=str(model_loc),
+        token_file=str(token_file),
+        protein_embeddings_dir=str(protein_embeddings_dir),
+        spec_chrom_csv_path=str(spec_chrom_csv),
+        offset_pkl_path=str(offset_pkl),
+        species=str(species),
+        nlayers=int(nlayers),
+        sample_size=int(sample_size),
+        seed=int(seed),
+        device=str(device),
+    )
+    return runtime_module, runtime
+
+
 def write_uce_input_h5ad(
     *,
     counts_dense: np.ndarray,
@@ -311,6 +375,7 @@ def run_uce_once(
     protein_embeddings_dir: Path,
     spec_chrom_csv: Path,
     offset_pkl: Path,
+    filter_enabled: bool = True,
 ) -> tuple[bool, str]:
     work_dir.mkdir(parents=True, exist_ok=True)
     work_dir_arg = str(work_dir) + ("" if str(work_dir).endswith("/") else "/")
@@ -340,6 +405,8 @@ def run_uce_once(
         str(spec_chrom_csv),
         "--offset_pkl_path",
         str(offset_pkl),
+        "--filter",
+        "true" if filter_enabled else "false",
     ]
 
     result = subprocess.run(
@@ -428,6 +495,7 @@ def run_uce_segment_with_retry(
     protein_embeddings_dir: Path,
     spec_chrom_csv: Path,
     offset_pkl: Path,
+    filter_enabled: bool = True,
     expected_ids: Sequence[str],
 ) -> tuple[np.ndarray, int, str | None]:
     batch_size = max(1, int(initial_batch_size))
@@ -449,6 +517,7 @@ def run_uce_segment_with_retry(
             protein_embeddings_dir=protein_embeddings_dir,
             spec_chrom_csv=spec_chrom_csv,
             offset_pkl=offset_pkl,
+            filter_enabled=filter_enabled,
         )
         if ok:
             output_h5ad = find_uce_output_h5ad(work_dir, input_h5ad)
@@ -583,6 +652,7 @@ def extract_side_embeddings_uce(
                         protein_embeddings_dir=protein_embeddings_dir,
                         spec_chrom_csv=spec_chrom_csv,
                         offset_pkl=offset_pkl,
+                        filter_enabled=True,
                         expected_ids=seg_ids,
                     )
 

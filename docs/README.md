@@ -15,7 +15,7 @@
 | --- | --- |
 | Research rationale | [Proposal](research/proposal.md), [landscape](research/landscape.md), [result architecture](research/result_architecture.md) |
 | Tasks | [Genetic](tasks/genetic_learnability.md), [chemical](tasks/chemical_learnability.md), [cross-intervention](tasks/cross_intervention.md), [cross-readout](tasks/cross_readout.md), [combination](tasks/combination.md), [schemas](tasks/output_schemas.md), [validation](tasks/validation.md), [evidence](tasks/evidence_index.md) |
-| Data | [Sources](data/sources.md), [object model](data/object_model.md), [response construction](data/response_construction.md), [preprocessing](data/preprocessing/), [representations](data/representations/) |
+| Data | [Data contracts](data/README.md), [architecture](data/architecture.md), [workflow](data/workflow.md), [intake](data/intake.md), [sources](data/sources.md), [object model](data/object_model.md), [response construction](data/response_construction.md) |
 | Metrics | [Population similarity](metrics/population_similarity.md), [retrieval](metrics/retrieval.md), [prediction](metrics/prediction.md), [aggregation](metrics/aggregation.md) |
 | Visualization | [Figure plan](visualization/figure_plan.md), [standards](visualization/standards.md) |
 | Manuscript | [Outline](manuscript/outline.md), [writing standards](manuscript/writing_standards.md), [figure legends](manuscript/figure_legends.md) |

@@ -1,5 +1,10 @@
 # scPerturb Preprocessing Contract
 
+Apply the [frozen workflow](../workflow.md), [object schema](../object_model.md),
+[matrix semantics](../matrix_semantics.md) and [manifest](../manifests.md) contracts.
+Intake/eligibility precede formal preparation. Preserve source-native expression
+files separately from canonical prepared outputs.
+
 ## Inputs
 
 Primary source root:
@@ -56,15 +61,21 @@ True combination conditions preserve constituent identities in `combination_memb
 
 ## State surfaces
 
-The source bundle materializes state inputs needed downstream:
+The prepared bundle materializes state inputs needed downstream:
 
 - Gene expression/state matrix or shards;
 - condition/observation registry;
 - control candidate registry;
 - FM cell handoff registry where FM extraction is requested;
-- source manifest and exclusions.
+- prep manifest referencing the source manifest, matrix manifests and exclusions.
 
 Delta or SystemaResidual response vectors are not frozen in source preprocessing; they are built by the shared response-construction stage.
+
+Observation, experimental-unit, condition and control tables use the canonical
+schemas. FM handoffs are projections of these identities and must preserve
+matrix semantics and cell/control coverage. Preserve source raw counts and
+normalized layers distinctly where available. Any split-fitted transformation
+waits for split freezing and records lawful fit membership.
 
 ## Determinism
 

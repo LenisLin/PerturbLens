@@ -1,3 +1,8 @@
+---
+name: perturblens-evidence
+description: Trace PerturbLens scientific claims through source, response, split, run, result, and validation evidence.
+---
+
 # PerturbLens Evidence Trace
 
 Use this skill when reporting or validating scientific results.

@@ -1,3 +1,8 @@
+---
+name: perturblens-grounding
+description: Ground PerturbLens scientific scope, task semantics, response construction, and claim boundaries before changes.
+---
+
 # PerturbLens Grounding
 
 Use this skill before changing scientific scope, task semantics, data objects, response construction, metrics, or figures.

@@ -16,6 +16,11 @@ The repository currently provides extraction utilities for:
 - `state`
 - `tahoe-x1`
 
+These utilities retain legacy K562 snapshot entrypoints; they are not current
+R2-R6 run adapters. See the [extractor interface status](../../../scripts/fm_extractors/README.md).
+Their reusable state-extraction routines still require the current state-build
+and response-construction contracts before producing PerturbLens evidence.
+
 Availability of an extractor does not require every model to appear in every main-text comparison. A primary FM panel must be frozen before result inspection to avoid model shopping.
 
 ## Build contract

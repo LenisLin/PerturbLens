@@ -89,6 +89,11 @@ Links each anchor-target/context unit to its R2/R3 measured-response support and
 
 Persists transcriptomic-morphology unit pairs, matching tier, condition agreement fields, and exclusion reasons.
 
+This is a task-selected projection of
+`data/relations/<relation_build_id>/cross_readout_links.parquet`, retaining
+`link_id` and `relation_build_id`. The [data relation contract](../data/relations.md)
+owns shared fields; this output records the exact cohort used by the run.
+
 ## R6 residual table
 
 `combination_residual_long.parquet`

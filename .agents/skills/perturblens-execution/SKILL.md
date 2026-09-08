@@ -1,3 +1,8 @@
+---
+name: perturblens-execution
+description: Apply PerturbLens run-family, manifest, validation, and NAS-backed storage rules before execution.
+---
+
 # PerturbLens Execution
 
 Use `docs/governance/runbook.md` as the execution authority.

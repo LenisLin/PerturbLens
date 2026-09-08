@@ -4,6 +4,13 @@
 
 This document defines source families and entry requirements. Source presence does not make a comparison lawful; task contracts define lawful matching and splits.
 
+New and historical sources follow the [data architecture](architecture.md),
+[intake workflow](intake.md) and [eligibility contract](eligibility.md).
+Expression profiles and images with treatment/control metadata form the source
+preservation base. Traceable precomputed profiles/embeddings can be retained and
+adopted as state artifacts under the [matrix contract](matrix_semantics.md).
+Source-native files may already be processed; their semantics remain explicit.
+
 ## Current transcriptomic source families
 
 ### LINCS
@@ -59,6 +66,11 @@ Three matching tiers are recognized:
 
 R5 claims must state the tier used.
 
+The canonical stored values are `paired_assay`, `condition_matched` and
+`label_matched`; the source/proposal alias `same_assay_paired` is normalized to
+`paired_assay` with its raw label retained. Shared schema and evidence requirements
+are owned by [relations](relations.md).
+
 ## Combination source class
 
 R6 requires explicit multi-perturbation observations with constituent single perturbations and matched controls in the same or a sufficiently compatible experimental system.
@@ -92,3 +104,9 @@ Before any R2-R6 production run, materialize a source inventory recording:
 - exclusion reasons.
 
 The inventory is descriptive evidence, not proof that a downstream task is sufficiently powered.
+
+The inventory is materialized through `file_inventory.parquet`,
+`coverage_summary.parquet` and `task_eligibility.parquet` before localization or
+formal processing. A documented include decision precedes prepared/state/response
+builds. Source-specific appendices must freeze unresolved metadata, normalization,
+matching and support rules before the affected operation.

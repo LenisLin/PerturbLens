@@ -32,7 +32,10 @@
 # Last Updated: 2026-03-05
 
 """
-Task2 scGPT FM extractor with strict row-preservation contract:
+PerturbLens scGPT utilities with a legacy snapshot CLI.
+
+The standalone Task2 CLI preserves the historical K562 delta interface, not
+the current R2-R6 run contracts. Its row-preservation contract is:
 
 1) Output fm_delta.npy must have exactly N rows where N = len(delta_meta).
 2) Row i always corresponds to delta_meta row_id i (contiguous 0..N-1 required).
@@ -48,6 +51,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import functools
 import hashlib
 import inspect
 import json
@@ -72,7 +76,9 @@ MAX_COUNTEREXAMPLES = 5
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Task2 K562 scGPT FM delta extractor")
+    parser = argparse.ArgumentParser(
+        description="PerturbLens scGPT utilities: legacy K562 snapshot CLI, not an R2-R6 runner"
+    )
     parser.add_argument("--project-root", type=Path, default=Path("."))
     parser.add_argument("--run-id", required=True)
     parser.add_argument("--seed", type=int, default=None)
@@ -314,6 +320,68 @@ def build_adata_chunk(
     adata = ad.AnnData(X=chunk_counts.astype(np.float32, copy=False), obs=obs)
     adata.var["gene_symbol"] = [str(g) for g in gene_symbols]
     return adata
+
+
+@functools.lru_cache(maxsize=8)
+def load_scgpt_vocab_genes(model_dir: str) -> frozenset[str]:
+    vocab_file = Path(model_dir) / "vocab.json"
+    with vocab_file.open("r", encoding="utf-8") as handle:
+        payload = json.load(handle)
+    if isinstance(payload, Mapping):
+        return frozenset(str(gene) for gene in payload.keys())
+    return frozenset(str(gene) for gene in payload)
+
+
+def scgpt_vocab_nonzero_cell_mask(
+    *,
+    chunk_counts: np.ndarray,
+    gene_symbols: Sequence[str],
+    model_dir: Path,
+    column_block_size: int = 4096,
+) -> np.ndarray:
+    vocab_genes = load_scgpt_vocab_genes(str(Path(model_dir).resolve()))
+    vocab_columns = np.asarray(
+        [idx for idx, gene in enumerate(gene_symbols) if str(gene) in vocab_genes],
+        dtype=np.int64,
+    )
+    n_cells = int(chunk_counts.shape[0])
+    if n_cells <= 0:
+        return np.zeros((0,), dtype=bool)
+    if vocab_columns.size <= 0:
+        return np.zeros((n_cells,), dtype=bool)
+
+    expressed = np.zeros((n_cells,), dtype=bool)
+    step = max(1, int(column_block_size))
+    for start in range(0, int(vocab_columns.size), step):
+        end = min(start + step, int(vocab_columns.size))
+        expressed |= np.any(chunk_counts[:, vocab_columns[start:end]] != 0, axis=1)
+        if bool(expressed.all()):
+            break
+    return expressed
+
+
+def summarize_scgpt_vocab_expression(
+    *,
+    chunk_counts: np.ndarray,
+    gene_symbols: Sequence[str],
+    model_dir: Path,
+) -> tuple[np.ndarray, dict[str, int]]:
+    scgpt_input_mask = scgpt_vocab_nonzero_cell_mask(
+        chunk_counts=chunk_counts,
+        gene_symbols=gene_symbols,
+        model_dir=model_dir,
+    )
+    any_expression_mask = np.any(chunk_counts != 0, axis=1)
+    filtered_mask = ~scgpt_input_mask
+    return scgpt_input_mask, {
+        "n_cells": int(chunk_counts.shape[0]),
+        "n_kept_cells": int(scgpt_input_mask.sum()),
+        "n_filtered_cells": int(filtered_mask.sum()),
+        "n_cells_without_any_expression": int((filtered_mask & ~any_expression_mask).sum()),
+        "n_cells_with_expression_only_outside_scgpt_vocab": int(
+            (filtered_mask & any_expression_mask).sum()
+        ),
+    }
 
 
 def extract_side_embeddings(

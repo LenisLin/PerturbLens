@@ -19,7 +19,10 @@ Canonical subroots:
 
 ## Layout
 
-`data/` stores immutable or versioned prepared source bundles, state representations, response objects, and split registries.
+`data/` stores the catalog, intake assessments, source bundles, prepared data,
+state representations, biological relations, response objects and split
+registries. The [data architecture](../data/architecture.md) owns subdirectories,
+retention/localization rules and format selection within this allowed root.
 
 `runs/<run_id>/<run_family>/` stores runtime manifests, logs, tables, model outputs, and validation assertions.
 
