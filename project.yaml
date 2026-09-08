@@ -1,29 +1,42 @@
-name: m2m-bench
-title: M2M-Bench
-one_liner: Audit-grade benchmark for modality and mechanism concordance across LINCS and scPerturb perturbation-response data.
-domain: Computational biology benchmark for perturbation-response concordance
-stage: See docs/governance/state.md for implementation status and verification boundaries
-owner: unknown
+name: perturblens
+title: PerturbLens
+one_liner: Response-centric characterization of cellular perturbation information across context, target, intervention, readout, and combination boundaries.
+domain: Computational biology; perturbation response characterization and virtual-cell evaluation
+stage: See docs/governance/state.md
+owner: LenisLin
 license: unknown
 entrypoints:
   - python -m pip install -e ".[dev]"
-  - python scripts/script1_reconstruct_task_centric_data.py --run-id <run_id>
-  - python scripts/script1_cutover_task_centric_data.py --candidate-root /mnt/NAS_21T/ProjectData/M2M/data_candidate
-datasets:
-  - LINCS
-  - scPerturb
-  - scPerturb K562
-outputs:
-  - data_candidate/task1/manifest.json
-  - data_candidate/task2/manifest.json
-  - runs/task_centric_migration/<run_id>/migration_report/migration_report.json
-  - runs/task_centric_migration/<run_id>/migration_report/migration_path_map.csv
-  - runs/task_centric_migration/<run_id>/validation/task1/task1_validation.json
-  - runs/task_centric_migration/<run_id>/validation/task2/task2_validation.json
+primary_sources:
+  - LINCS transcriptomics
+  - scPerturb transcriptomics
+planned_source_classes:
+  - matched perturbational morphology / Cell Painting
+  - genetic and chemical combination datasets
+state_representations:
+  transcriptomics:
+    - Gene
+    - Pathway
+    - FM
+  morphology:
+    - CellProfiler
+    - DeepMorphology
+response_views:
+  - Delta
+  - SystemaResidual
+evaluation_families:
+  - population_similarity
+  - instance_retrieval
+  - model_prediction
+results:
+  - r1_framework
+  - r2_genetic
+  - r3_chemical
+  - r4_cross_intervention
+  - r5_cross_readout
+  - r6_combination
 components:
   - docs/
-  - docs/governance/
-  - scripts/
   - scripts/fm_extractors/
-  - src/m2mbench/
-  - runs/
+  - src/perturblens/
+  - tests/

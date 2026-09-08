@@ -1,41 +1,76 @@
-# Research Roadmap
+# PerturbLens Research Roadmap
 
-## Role
+The roadmap expresses dependency order. Completion is recorded only in `docs/governance/state.md` and evidence manifests.
 
-This document records what research work should be considered next, why it is
-needed, and the conditions for undertaking it. Current execution progress and
-blockers are recorded in [state](governance/state.md), not duplicated here.
+## Phase 1 — Framework closure
 
-The current approved scope is defined in [project](project.md). A candidate
-below is not an approved analysis or an automatic addition to that scope.
+Freeze before production analysis:
 
-## Workstreams And Entry Conditions
+1. source inventory and metadata coverage;
+2. state-representation contracts;
+3. control Delta and SystemaResidual reference semantics;
+4. population similarity and retrieval metrics;
+5. Cell-Eval2/VCC2026 prediction metric version and configuration;
+6. unified result schemas and validation assertions.
 
-| Workstream | Evidence or design gap | Dependencies and entry condition | Expected deliverable | Decision status |
-| --- | --- | --- | --- | --- |
-| Task-data contract closure | Complete source-specific registry detail and demonstrate a lawful reusable snapshot | Resolve the open items indexed in state; use the approved Task1 preparation contracts | Data-interface decisions and validated snapshot evidence | Existing scope; unresolved details require confirmation |
-| Metric and task analysis specification | Complete numerical edge rules and task-specific statistical plans without relying on figure prose | Confirm estimands, comparison scope, inference units, missingness handling, and primary versus exploratory analyses | Updated metric and task contracts with concrete validation cases | Pending design approval |
-| Audited Task1 and Task2 evidence | Contracts alone do not establish completed group, retrieval, or synthesis results | Lawful input snapshots, agreed calculations, and task validation gates | Audited tables and evidence-index entries for each task separately | Existing scope; execution depends on validated inputs |
-| Robustness and external validation | Determine which important conclusions need additional support beyond the core evaluated slice | Identify a specific claim and plausible bias or generalizability limitation; assess suitable data and lawful comparisons | A bounded validation proposal with success defined by evidence quality, not a favorable result | Candidate; not approved as a new task or dataset |
-| Manuscript and figure assembly | Connect approved claims to sufficiently validated results | Evidence index identifies the supporting run, table, denominator, and limitations | Task-backed figures, legends, and section drafts | Existing figure roles retained; evidence-dependent |
+Deliverable: R1-ready methods/data surfaces and executable shared contracts.
 
-The table expresses dependency order rather than calendar commitments.
-Additional modalities, broader FM manuscript scope, and independent tasks must
-be evaluated as explicit research proposals rather than inferred from a desire
-for a larger paper.
+## Phase 2 — R2 genetic learnability
 
-## Proposal Record
+Build and validate:
 
-Each substantive extension records:
+- inner/replicate split;
+- unseen-context split;
+- unseen-target split;
+- baseline and model registry;
+- Gene/Pathway/FM response views;
+- population, retrieval, and prediction outputs.
 
-1. Research question and the evidence gap it addresses.
-2. Proposed data, comparisons, and scope change.
-3. Dependencies, feasibility, and priority rationale.
-4. Conditions for starting or declining the work.
-5. Expected outputs and observable completion criteria.
-6. Decision status: candidate, approved, deferred, or not adopted.
-7. Links to the affected contracts and the decision record when approved.
+Primary question: which genetic response information stops being transferable as biological novelty increases?
 
-Completion criteria must permit null, negative, or uncertain results. Once work
-is approved, detailed methods belong in its task or data contract, execution
-status belongs in state, and the reason for the decision belongs in history.
+## Phase 3 — R3 chemical learnability
+
+Build and validate:
+
+- inner compound response;
+- unseen context;
+- unseen compound with target stratification;
+- unseen target;
+- multi-target annotation handling;
+- time/dose explanatory models.
+
+Primary question: what response structure is compound-specific, target-linked, context-dependent, or transferable?
+
+## Phase 4 — R4 cross-intervention
+
+Construct matched target-context cohorts and evaluate chemical-to-genetic and genetic-to-chemical conservation under matched response views and representations.
+
+Primary question: how much target-linked response information survives a change in intervention modality?
+
+## Phase 5 — R5 cross-readout
+
+Before execution, freeze morphology sources and matching tiers. Then materialize CellProfiler and deep-morphology features, construct response views, and evaluate response strength, geometry, retrieval, and cross-modal prediction.
+
+Primary question: which response information is shared between transcriptomic and morphological readouts, and which is modality-specific?
+
+## Phase 6 — R6 combination
+
+Freeze eligible genetic and chemical combination sources and phenotype-appropriate nulls. Compare observed combination responses with additive or matching references and evaluate residual reproducibility and predictability.
+
+Primary question: where does single-perturbation response compositionality break down?
+
+## Phase 7 — Synthesis
+
+Integrate R2-R6 without collapsing them into a single leaderboard. Synthesis should emphasize the boundary ladder:
+
+```text
+learnable
+-> context/target transferable
+-> cross-intervention conserved
+-> cross-readout conserved
+-> compositional
+```
+
+## Stop conditions
+
+A result family is deferred rather than forced when matching support, independent replicates, source metadata, or lawful split sizes are insufficient. Negative or null results are valid outcomes if the comparison is adequately powered and auditable.

@@ -1,65 +1,40 @@
 # Documentation Policy
 
-## Source Hierarchy
+## Active domains
 
-When docs disagree, use this order:
+The documentation root contains exactly three Markdown entry files (`README.md`, `project.md`, `roadmap.md`) and seven active domains:
 
-1. Audited manifests and stage outputs
-2. Active domain contracts under `docs/tasks/`, `docs/data/`, and `docs/metrics/`
-3. `docs/governance/*.md`
-4. `docs/manuscript/` and `docs/visualization/`
+- `research`
+- `tasks`
+- `data`
+- `metrics`
+- `visualization`
+- `manuscript`
+- `governance`
 
-Audited outputs establish what a run actually produced. Approved contracts
-establish required behavior. A disagreement must be reported and resolved; do
-not rewrite a requirement to make a nonconforming output appear valid.
+Prior architectures are not retained in the active tree; Git history provides project history.
 
-The [project definition](../project.md) summarizes approved scope. The
-[roadmap](../roadmap.md) is not a source of active task requirements. Archived
-documents preserve historical context and are not current contracts.
+## Source hierarchy
+
+1. audited manifests, result tables, and validation assertions;
+2. active task/data/metric contracts;
+3. governance rules and state;
+4. research rationale;
+5. manuscript and visualization consumers.
 
 ## Ownership
 
-- Each formal definition has one domain owner. Other documents link to it or
-  use a compatible, non-authoritative summary.
-- Data objects and transformations belong in data; comparison units and
-  task-specific statistical plans belong in tasks; calculations belong in
-  metrics.
-- Task output schemas and shared verification belong in tasks. Storage roots
-  are maintained in the [storage policy](storage_policy.md).
-- Figure assignments belong in the figure plan; technical designs belong in
-  the corresponding figure file; legend text belongs in manuscript.
-- The root contains only `README.md`, `project.md`, and `roadmap.md`.
+- research owns motivation, novelty, and scientific argument design;
+- data owns observations, metadata, state representations, and response construction;
+- tasks own lawful biological comparisons, splits, model-input regimes, and task-level statistics;
+- metrics own calculations;
+- governance owns run/evidence/storage rules;
+- visualization and manuscript consume evidence without changing semantics.
 
-## Documentation Rules
+## Status discipline
 
-- Use the field owners and figure plan linked from [the index](../README.md).
-- Define every field, metric, stage, and panel when it first appears.
-- Remove inactive names instead of carrying multiple names for one object.
+Design, implementation, execution, validation, and manuscript claim status are separate. Planned analyses are never described as observed results.
 
-## Status And Change Control
+## Change rule
 
-- Distinguish draft, approved, and superseded requirements from planned,
-  implemented, and verified execution states.
-- A file may retain approved rules alongside explicitly identified pending
-  sections. Do not present the pending sections as executable requirements.
-- Record the scope and decision basis of substantive changes. Dates describe
-  actual decisions or checks, not inferred completion dates.
-- Scope, units, denominators, metric semantics, and figure claims require
-  human-lead approval before implementation changes. Update the controlling
-  contract as part of that approved change.
-- Update consumers when moving a contract. Markdown paths, headings, and lists
-  read by code are interfaces and require corresponding checks.
-- Retire an old document only after its active content and consumers have
-  successors. Record important reasons in history without duplicating Git's
-  line-by-line history.
-- Preserve historical run manifests and their recorded source paths.
-
-## Evidence-First Reporting
-
-- Cite file paths, manifests, tables, or command output.
-- If evidence is incomplete, state the missing check directly.
-
-## README Policy
-
-The repository `README.md` is maintained manually as the repo entry document.
-`docs/README.md` is the documentation navigation and active-contract index.
+Changes to units, split semantics, target/compound matching, control or Systema references, model inputs, metric formulas, cross-modal matching, combination nulls, or claim boundaries require an owning-contract update in the same change.

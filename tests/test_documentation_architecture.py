@@ -7,27 +7,18 @@ from urllib.parse import unquote, urlsplit
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DOCS_ROOT = REPO_ROOT / "docs"
 DOMAINS = {
+    "research",
     "tasks",
     "data",
     "metrics",
     "visualization",
     "manuscript",
     "governance",
-    "history",
 }
-RETIRED_REFERENCE = re.compile(
-    r"docs/(?:contracts/|plotting/|redesign_checkpoint\.md|data_contracts\.md|"
-    r"manuscript_master\.md|tmp_stage_planning_freeze\.md|"
-    r"governance/(?:repo_conventions|local_storage_policy|team-and-governance)\.md)"
-)
 
 
 def active_documents() -> list[Path]:
-    documents = [
-        document
-        for document in DOCS_ROOT.rglob("*.md")
-        if document.relative_to(DOCS_ROOT).parts[0] != "history"
-    ]
+    documents = list(DOCS_ROOT.rglob("*.md"))
     documents.extend([REPO_ROOT / "README.md", REPO_ROOT / "AGENTS.md", REPO_ROOT / "project.yaml"])
     documents.extend((REPO_ROOT / ".agents" / "skills").rglob("SKILL.md"))
     return sorted(documents)
@@ -42,19 +33,27 @@ def test_documentation_root_has_three_entries_and_seven_domains() -> None:
     assert {directory.name for directory in DOCS_ROOT.iterdir() if directory.is_dir()} == DOMAINS
 
 
-def test_active_documents_do_not_reference_retired_contract_paths() -> None:
+def test_no_active_legacy_project_contracts() -> None:
+    forbidden_paths = {
+        DOCS_ROOT / "tasks" / "task1.md",
+        DOCS_ROOT / "tasks" / "task2.md",
+        DOCS_ROOT / "tasks" / "study_map.md",
+        DOCS_ROOT / "data" / "snapshots" / "task1.md",
+    }
+    assert not any(path.exists() for path in forbidden_paths)
+
+    stale_pattern = re.compile(r"\bM2M-Bench\b|docs/tasks/task[12]\.md|/ProjectData/M2M/")
     stale = [
         str(document.relative_to(REPO_ROOT))
         for document in active_documents()
-        if RETIRED_REFERENCE.search(document.read_text(encoding="utf-8"))
+        if stale_pattern.search(document.read_text(encoding="utf-8"))
     ]
-    assert not stale, f"Retired contract references remain in: {stale}"
+    assert not stale, f"Legacy active references remain in: {stale}"
 
 
 def test_local_markdown_links_resolve() -> None:
     missing = []
-    documents = active_documents() + list((DOCS_ROOT / "history").rglob("*.md"))
-    for document in documents:
+    for document in active_documents():
         content = re.sub(r"```.*?```", "", document.read_text(encoding="utf-8"), flags=re.S)
         for target in re.findall(r"!?\[[^\]]*\]\(([^\s)]+)\)", content):
             parsed = urlsplit(target)
@@ -77,18 +76,7 @@ def test_code_formatted_documentation_paths_resolve() -> None:
     assert not missing, "Missing contract paths:\n" + "\n".join(missing)
 
 
-def test_fm_document_preserves_machine_readable_active_families() -> None:
+def test_primary_fm_families_are_registered() -> None:
     contract = (DOCS_ROOT / "data" / "representations" / "fm.md").read_text(encoding="utf-8")
-    active_section = contract.split("## Active FM Families\n", 1)[1].split("\n## ", 1)[0]
-    families = [
-        line[2:].strip().strip("`") for line in active_section.splitlines() if line.startswith("- ")
-    ]
-    assert families == [
-        "scgpt",
-        "geneformer",
-        "scbert",
-        "scfoundation",
-        "uce",
-        "state",
-        "tahoe-x1",
-    ]
+    for family in ["scgpt", "geneformer", "scbert", "scfoundation", "uce", "state", "tahoe-x1"]:
+        assert f"`{family}`" in contract

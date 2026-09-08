@@ -1,120 +1,57 @@
-# Manuscript Outline
+# PerturbLens Manuscript Outline
 
-## Current Paper Shape
+## Central thesis
 
-M2M-Bench is a benchmark/evaluation paper for transcriptome-centered
-perturbation-response concordance. The current main-text sequence is:
+PerturbLens maps how cellular perturbation-response information is preserved, lost, or reorganized across increasingly difficult biological boundaries: within perturbation classes, across cellular contexts and targets, across intervention modality, across transcriptomic/morphological readouts, and under perturbation composition.
 
-1. benchmark definition and scope;
-2. Task1 modality-concordance evidence;
-3. Task2 mechanism-concordance evidence; and
-4. discussion of evidence boundaries, limitations, and future work.
+## Introduction
 
-Figure 1 defines the benchmark. Figure 2 presents Task1 main evidence. Figure 3
-presents Task2 main evidence. Task1 and Task2 remain separate in the main text.
-FM enters the main manuscript only through the scPerturb/K562 Figure 3F
-local-only panel.
+1. Perturbation-response prediction is central to virtual-cell and phenotypic profiling.
+2. Complex models often provide limited gains over strong baselines in stringent generalization settings.
+3. Standard scores can be dominated by shared/systematic response structure.
+4. Existing work separately studies response decomposition, cross-context prediction, chemical-genetic translation, RNA-morphology integration, and combinations.
+5. The missing unifying question is what **response information** survives each biological boundary.
+6. Introduce PerturbLens as a descriptive response-centric framework.
 
-This is an outline of argument responsibilities, not a draft of results. It
-must not contain invented effect sizes, sample counts, citations, or final
-claims.
+## Results
 
-## Argument Spine
+### R1 — A unified framework for perturbation-response characterization
 
-The manuscript should connect:
+Define sources, state representations, response construction, evidence families, and coverage.
 
-research question -> task definition -> lawful data object -> approved metric
-and analysis -> audited evidence -> bounded interpretation
+### R2 — Genetic perturbation responses reveal a hierarchy of learnable information
 
-The project-level question and current contribution boundary are defined in
-docs/project.md. Future candidates remain in docs/roadmap.md and must not be
-written as current evidence.
+Inner -> unseen context -> unseen target; characterize which response properties stop transferring.
 
-## Section Responsibilities
+### R3 — Chemical perturbation responses separate compound-, target-, and context-level learnability
 
-### Title And Abstract
+Inner -> unseen context -> unseen compound -> unseen target; time/dose as explanatory covariates.
 
-Identify the benchmark and the perturbation-response concordance problem. The
-abstract should state the evaluation gap, introduce the two task families at a
-high level, and summarize only results supported by audited outputs. Do not
-include unverified numerical or priority claims.
+### R4 — Target-linked responses are partially conserved across chemical and genetic interventions
 
-### Introduction
+Use internally supported response structure to quantify cross-intervention conservation and biological resolution.
 
-Establish the field context, identify the evaluation gap, explain why
-modality- and mechanism-concordance questions matter, and motivate a benchmark
-that keeps the two task families explicit. End by defining the current scope
-and the evidence sequence without presenting future roadmap items as completed
-work.
+### R5 — Transcriptomic and morphological readouts preserve overlapping and distinct response information
 
-### Methods
+Compare response strength, geometry, retrieval, prediction, and intervention x readout conservation.
 
-Methods should introduce the data sources and object model before describing
-Task1 and Task2. It should then define:
+### R6 — Combination perturbations define the compositional boundary of response space
 
-- lawful task units and matching;
-- Gene and Pathway representation handling;
-- the approved Group and directional retrieval analyses;
-- metrics, aggregation, and chance correction;
-- validation and evidence traceability; and
-- the restricted scope of the FM representation.
+Test single-response nulls, residual reproducibility, and combination prediction.
 
-Authoritative details belong in docs/data/, docs/tasks/, docs/metrics/, and
-docs/governance/. The manuscript should cite or link those records as the
-project's internal source of truth.
+## Discussion
 
-### Results: Benchmark Definition
+Interpret the boundary ladder rather than a single overall score. Discuss shared versus specific response information, context/target novelty, intervention-specific divergence, readout-specific observability, and combination non-compositionality. Explicitly separate empirical learnability from absolute predictability and association from mechanism.
 
-Use Figure 1 to introduce the scenarios, data object construction, shared
-representation context, and four readout families. The prose should explain
-the benchmark question rather than treat the schematic's pseudo-visualization
-cues as result evidence.
+## Methods order
 
-### Results: Task1
-
-Use Figure 2 to present Task1 lawful scope, shared matched-unit evidence,
-internal-to-cross comparison, Gene versus Pathway comparison, and the two
-ranked pattern views. Keep internal and cross settings distinct. State
-thresholds and support where the corresponding panels exclude low-support
-surfaces or entities.
-
-### Results: Task2
-
-Use Figure 3 to present Task2 lawful scope, performance backbone, ranked
-cell-line and anchor_gene patterns, and the C2G Gene versus Pathway comparison.
-Keep C2G and G2C separate. Present Figure 3F only as the approved
-scPerturb/K562 FM local comparison and do not generalize it to other panels or
-datasets.
-
-### Discussion
-
-Interpret the observed evidence within the active data and task boundaries.
-Separate what is observed from why it may have occurred. Discuss limitations
-that affect matching, support, representation coverage, dataset or cell-line
-generalization, and the separation of Task1 from Task2. Tie future work to
-specific entries in docs/roadmap.md.
-
-## Figure And Table Handoff
-
-The current figure responsibilities are maintained in
-docs/visualization/figure_plan.md and the panel documents under
-docs/visualization/figures/. The current draft legends are maintained in
-docs/manuscript/figure_legends.md.
-
-Each result paragraph should be traceable to an approved plot-ready table or
-other audited output through the task evidence index and governance state. A
-figure reference alone is not evidence provenance.
-
-## Writing Sequence
-
-The current drafting order is:
-
-1. stabilize project, task, data, and metric definitions;
-2. assemble the methods argument from those definitions;
-3. write results around audited Task1 and Task2 outputs;
-4. write the discussion with explicit limitations and evidence boundaries; and
-5. perform terminology, quantitative consistency, claim-strength, and
-   figure-legend checks.
-
-The exact journal-specific article structure remains deferred. No submission
-scaffold is created by this outline.
+1. data/source inventory;
+2. condition and state object model;
+3. state representations;
+4. Delta/SystemaResidual construction;
+5. task splits/matching/nulls;
+6. population similarity;
+7. retrieval;
+8. prediction metrics/models/baselines;
+9. statistics/aggregation;
+10. validation/provenance.

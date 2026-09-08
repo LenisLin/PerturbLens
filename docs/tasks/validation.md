@@ -1,136 +1,65 @@
-# Task Validation and Audit Requirements
+# PerturbLens Validation Requirements
 
-This document defines the minimum validation contract for Task1, Task2, and
-their project-level synthesis. It is normative about checks, but it does not
-claim that a current run has passed them. Actual status and evidence locations
-are maintained in `docs/governance/state.md` and
-`docs/tasks/evidence_index.md`.
+## Universal gates
 
-## Validation gates
+### 1. Input integrity
 
-Every stage presented as audited must pass all three gates:
+- source hashes/versions exist;
+- condition/state/response rows align;
+- feature indices match matrices;
+- required metadata are present;
+- exclusions are explicit.
 
-1. Input integrity: hashes, schemas, row alignment, and required files.
-2. Metric integrity: metric family, denominator fields, and aggregation rules.
-3. Leakage integrity: leave-one-out or disjoint-gallery behavior required by
-   the applicable task contract.
+### 2. Response integrity
 
-Each assertion must be falsifiable through concrete files and table rows. A
-successful process exit or a non-empty output file is not, by itself, a passed
-gate.
+- every Delta links to its matched-control reference registry;
+- every SystemaResidual links to its perturbed reference registry;
+- leave-one-condition-out/reference exclusion is applied where required;
+- state representation and response feature axes are unchanged by metric code.
 
-## Stage bundle contract
+### 3. Split integrity
 
-Each stage bundle includes:
+- held-out contexts/targets/compounds/combinations are absent from forbidden training outcomes;
+- allowed external priors are declared;
+- repeated cells/wells/replicates do not cross split boundaries when that would leak test outcomes;
+- split manifests are immutable and hashed.
 
-- `run_manifest.json`
-- `audit_assertions.json`
-- `manifest.json`
-- the stage tables defined in `docs/tasks/output_schemas.md`
+### 4. Metric integrity
 
-The table manifest must include the common fields in
-`docs/tasks/output_schemas.md`. The run manifest identifies the input roots,
-contract versions, runtime parameters, and stage identity. The assertions file
-records the checks and their outcomes. A missing assertion is not equivalent to
-an assertion that passed.
+- metric package/config/version is recorded;
+- population/retrieval/prediction metric families are not interchanged;
+- retrieval galleries and positives are traceable;
+- VCC2026 metrics use the pinned Cell-Eval2 implementation or a tested equivalent;
+- morphology variants use their own validated calibration rather than copied transcriptomic numerical anchors.
 
-## Input integrity
+### 5. Statistical integrity
 
-The input gate verifies, as applicable to the stage:
+- inference/resampling level matches the biological claim;
+- common-support representation comparisons are paired;
+- coverage and exclusions accompany summaries;
+- confirmatory multiple testing is controlled as declared.
 
-- required source, snapshot, and representation artifacts exist at the active
-  roots;
-- source and snapshot manifests identify the inputs actually consumed;
-- table schemas and required columns match the versioned output contract;
-- primary keys are unique at their declared result level;
-- matrix rows and row-index identifiers agree without silent reordering;
-- Task1 cross alignment uses the declared
-  `(cell_line, perturbation_type, perturbation_gene)` unit;
-- Task2 membership and coverage tables agree on
-  `(dataset, cell_line, anchor_gene)` and the chemical/genetic counts;
-- representation availability is checked before a metric is emitted.
+## R4-specific gates
 
-Input facts must be checked against manifests inside the active data roots. The
-repository checkout remains source-only.
+- target membership is persisted;
+- multi-target compound dependence is not treated as independent replication;
+- genetic intervention direction/mode eligibility is checked;
+- C2G and G2C remain separate.
 
-## Metric integrity
+## R5-specific gates
 
-The metric gate verifies:
+- matching tier is present for every cross-readout unit;
+- condition agreement fields are auditable;
+- image-feature normalization is fit without downstream target leakage;
+- cross-modal prediction splits are disjoint at the claimed biological boundary.
 
-- each `metric_name` belongs to the metric family allowed by the task;
-- metric input representations and dimensions match their declared indices;
-- denominator fields are emitted with the metric value;
-- Task1 `underpowered_for_e_distance` follows the fewer-than-two rule;
-- Task2 `n_chem_sub` and `n_gen_sub` describe the instances used by
-  `e_distance`;
-- raw and corrected retrieval fields are not interchanged;
-- corrected retrieval values retain the `gallery_size` and
-  `n_positive_keys` context needed for chance correction;
-- summary tables do not drop the unit, direction, representation, or
-  denominator fields required by the task contract.
+## R6-specific gates
 
-Metric formulas and the current boundary of approved calculation details are
-defined in `docs/metrics/concordance.md`,
-`docs/metrics/retrieval.md`, and `docs/metrics/aggregation.md`.
+- constituent singles are available under the declared compatibility rule;
+- null model and response scale are versioned;
+- residuals are not reported as synergy without a separate synergy definition;
+- combination split leakage is checked at constituent identity level.
 
-## Leakage integrity
+## Evidence status
 
-The leakage gate verifies the gallery construction used by the stage:
-
-- Task1 internal true centroids are leave-one-out with respect to each query;
-- Task1 cross comparisons use the source-agnostic `instance_id` alignment and
-  do not use the query as an unintended target-side training observation;
-- Task2 C2G and G2C preserve their separate query and gallery cohorts;
-- a query is not silently included in a centroid used as its true comparison
-  when the applicable contract requires exclusion;
-- every reported positive rank is traceable to a lawful positive key.
-
-The exact disjoint-gallery construction for settings not fully specified by the
-current contracts remains pending and must be stated in the stage manifest
-before results are treated as final.
-
-## Task-specific checks
-
-### Task1
-
-- Internal and cross scopes use their declared units.
-- Internal `scPerturb` multi-gene genetic rows remain internal-only.
-- The cross slice contains only matched single-gene genetic units.
-- Chemical identity matching uses exact canonical target-set equality.
-- Each lawful retrieval query has `n_positive_keys = 1`.
-- `query_instance_id` traces to the upstream `instance_id`.
-- Internal true centroids exclude the query instance.
-
-### Task2
-
-- Every lawful unit has at least one chemical and one genetic member.
-- Chemical membership is based on `anchor_gene` belonging to the canonical
-  target set, while the row identity remains `perturbation_gene`.
-- Group outputs are scoped to the declared dataset and cell line.
-- Retrieval rows preserve `C2G` and `G2C` as separate directions.
-- C2G queries are chemical instances and G2C queries are genetic instances.
-- Synthesis does not alter upstream units, directions, or denominators.
-- Corrected multisource outputs are not replaced by a scPerturb-only path.
-
-### S7
-
-- Every direct input is registered in `project_input_registry.csv`.
-- Each input has a stage directory, manifest, and audit-assertions path.
-- S7 summaries preserve the upstream task and analysis-family identity.
-- Scorecard inputs are traceable to the project summary and representation.
-
-## Pending validation details
-
-The following are not silently filled by this migration:
-
-- exhaustive source-specific registry inventories beyond the frozen minimum;
-- richer per-artifact audit payloads;
-- exact estimator and bias-correction details for `e_distance`;
-- tie, invalid-rank, zero-denominator, missing-value, and correction behavior
-  where the task and metric contracts do not specify it;
-- confidence intervals, hypothesis tests, resampling units, multiple
-  comparisons, and pooling rules;
-- panel-specific `2A` fields and panel-level rendering checks.
-
-These items are completion criteria for the relevant future analysis protocol,
-not implicit defaults.
+A successful process exit or non-empty file is not a passed scientific gate. `validation_assertions.json` records each assertion and outcome.

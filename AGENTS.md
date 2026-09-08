@@ -1,76 +1,59 @@
-# M2M-Bench Agent Guide
+# PerturbLens Agent Guide
 
-Start with `docs/README.md` and `docs/project.md`. They identify the current
-benchmark scope and the domain contracts that own its terminology and methods.
+Start with `docs/README.md`, `docs/project.md`, and `docs/governance/state.md`.
 
-## Always-Active Repo Rules
+## Source hierarchy
 
-### Source Hierarchy
+When project documents or outputs disagree, use this order:
 
-When repo documents disagree, use this order:
+1. audited manifests, result tables, and validation assertions;
+2. active contracts in `docs/tasks/`, `docs/data/`, and `docs/metrics/`;
+3. `docs/governance/`;
+4. scientific rationale in `docs/research/`;
+5. manuscript and visualization plans.
 
-1. Audited manifests and stage outputs
-2. Active contracts in `docs/tasks/`, `docs/data/`, and `docs/metrics/`
-3. `docs/governance/*.md`
-4. `docs/manuscript/` and `docs/visualization/`
+A proposal is not execution evidence. A path is not proof that a run completed.
 
-The roadmap proposes future work; history preserves earlier decisions. Neither
-supersedes an active contract. Report disagreements between run outputs and
-required behavior instead of silently rewriting either side.
+## Scientific architecture
 
-### Minimum Grounding Before Changes
+PerturbLens separates four layers:
 
-Read the smallest relevant subset of:
+1. **Data** — perturbation observations and matched controls.
+2. **State representation** — Gene/Pathway/FM or CellProfiler/deep morphology features.
+3. **Response construction** — control Delta or Systema-style perturbation-specific response.
+4. **Biological relation/evaluation** — population similarity, retrieval, and prediction under a declared split or boundary.
 
-- `docs/README.md` and `docs/project.md`
-- `docs/governance/state.md`
-- `docs/governance/runbook.md`
-- `docs/governance/documentation_policy.md`
-- `docs/governance/storage_policy.md` for data or run roots
-- `docs/data/object_model.md` and relevant preprocessing/representation/snapshot
-  contracts when touching task data
-- `docs/tasks/task1.md` for Task1 semantics
-- `docs/tasks/task2.md` for Task2 semantics
-- `docs/tasks/output_schemas.md` and `docs/tasks/validation.md` for outputs
-- the relevant `docs/metrics/` contract for metric calculations
-- `docs/manuscript/outline.md` and `docs/visualization/figure_plan.md` for
-  manuscript or figure work
+Do not collapse these layers into one generic “metric”.
 
-### Evidence And Storage Discipline
+## Main result contracts
 
-- Use NAS-backed roots for evidence discovery:
-  - `/mnt/NAS_21T/ProjectData/M2M/runs`
-  - `/mnt/NAS_21T/ProjectData/M2M/runs/manuscript_active/analysis`
-  - `/mnt/NAS_21T/ProjectData/M2M/runs/_staging/manuscript_visual_revision_current`
-- Treat the local checkout as source-only.
-- Every non-trivial claim should cite a file path, manifest, table, or command
-  result.
-- If evidence is incomplete, say what still needs checking.
+- R2: `docs/tasks/genetic_learnability.md`
+- R3: `docs/tasks/chemical_learnability.md`
+- R4: `docs/tasks/cross_intervention.md`
+- R5: `docs/tasks/cross_readout.md`
+- R6: `docs/tasks/combination.md`
 
-### Scientific Boundaries
+R1 is the project/framework definition and does not require a separate prediction task.
 
-- M2M-Bench is a benchmark/evaluation paper.
-- Keep `Task1` and `Task2` separate.
-- Keep `FM` scoped to the `scPerturb/K562` `Figure 3F` local-only panel.
-- Update the relevant contract docs before changing benchmark semantics or
-  figure meaning.
+## Evidence discipline
 
-### Change Discipline
+Every non-trivial scientific statement must be traceable to a source manifest, response build, split manifest, metric/model run, result table, and validation assertion. Preserve representation, response view, split, context, target/compound identity, readout modality, denominators, and exclusions.
 
-- Keep names, paths, and figure roles synchronized across docs.
-- Remove inactive wording instead of layering alternate names on top of the
-  current system.
-- Do not fall back from corrected multisource Task2 outputs to a scPerturb-only
-  path.
-- Keep research direction in `docs/roadmap.md`, observed progress in
-  `docs/governance/state.md`, and decision rationale in `docs/history/`.
-- Organize shared methods by responsibility, not by figure number. Archived
-  documents are not active implementation instructions.
+## Active storage
 
-## Repo-Scoped Skills
+Use only the roots in `docs/governance/storage_policy.md`. The repository checkout is source-only.
 
-Use repo-local skills when the task needs deeper workflow guidance:
+## Change discipline
 
-- `.agents/skills/m2m-contract-grounding/SKILL.md`
-- `.agents/skills/m2m-evidence-trace/SKILL.md`
-- `.agents/skills/m2m-migration-runbook/SKILL.md`
+- Update the owning contract before changing units, splits, response semantics, metric formulas, or figure claims.
+- Treat time/dose as chemical explanatory covariates unless an explicitly matched dynamic task is approved.
+- Do not claim causal equivalence from chemical-genetic similarity.
+- Do not claim direct molecular-to-morphological causality from cross-readout association.
+- Do not call a combination residual “synergy” without a phenotype-appropriate interaction definition.
+- State representation comparison is a lens on response information, not a leaderboard by default.
+
+## Repo skills
+
+- `.agents/skills/perturblens-grounding/SKILL.md`
+- `.agents/skills/perturblens-evidence/SKILL.md`
+- `.agents/skills/perturblens-execution/SKILL.md`

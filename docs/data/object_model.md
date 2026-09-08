@@ -1,118 +1,86 @@
-# Data Object Model
+# PerturbLens Data Object Model
 
-## Role
+## Core objects
 
-This document defines the shared names and relationships for benchmark data
-objects. It does not define which objects are lawful members of Task1 or
-Task2; those decisions belong to the corresponding task contracts.
-
-## Object Layers
-
-| Object | Meaning | Primary owner |
-| --- | --- | --- |
-| Raw observation | A source-native signature or single-cell row before benchmark aggregation | Source-specific preprocessing |
-| Treated cell/signature | A retained perturbation observation linked to source metadata | Source-specific preprocessing |
-| Control cell | A source-native control observation eligible for scPerturb pairing | [scPerturb preprocessing](preprocessing/scperturb.md) |
-| Delta instance | One aggregated perturbation-response vector in delta space | Source preprocessing and [Task1](../tasks/task1.md) |
-| Representation | A feature-space vector for one delta instance, such as `Gene`, `Pathway`, or scoped `FM` | [Gene](representations/gene.md), [Pathway](representations/pathway.md), [FM](representations/fm.md) |
-| Unit | A task-defined comparison group or cohort | [Task1](../tasks/task1.md) or [Task2](../tasks/task2.md) |
-| Snapshot surface | A manifest-backed collection of registries and representation matrices | [Task1 snapshot](snapshots/task1.md) |
-
-Every perturbation row that enters the current source-local Task1 bundle maps
-to one aggregated delta instance. A delta instance is not a raw observation,
-a raw cell embedding, or a scalar distance.
-
-## Shared Identity Fields
-
-The harmonized instance metadata uses these fields:
-
-| Field | Definition |
+| Object | Meaning |
 | --- | --- |
-| `instance_id` | Persisted instance-level key with the readable composite format `{dataset}::{cell_line}::{perturbation_type}::{perturbation_gene}::{time_hr_or_NA}::{dose_um_or_NA}::{source_trace}` |
-| `dataset` | Source dataset identity |
-| `cell_line` | Harmonized cellular background field; source-specific extraction is defined by preprocessing contracts |
-| `perturbation_type` | Benchmark vocabulary: `chemical` or `genetic` |
-| `perturbation_gene` | Canonical perturbation identity; chemical rows use target-set strings, genetic rows use one gene by default |
-| `time_hr` | Explicit numeric perturbation time in hours, or `NA` |
-| `dose_um` | Explicit dose converted to micromolar when a convertible molar unit is provided, or `NA` |
-| `source_trace` | Source-native trace used to construct the instance key: `sig_id` for LINCS and treated `cell_id` for scPerturb |
+| Raw observation | Source-native cell, image, or signature before PerturbLens transformations |
+| Condition | A perturbation/control condition with biological and experimental metadata |
+| State representation | A vector or distribution describing observed cellular state in a declared feature space |
+| Reference set | Controls or perturbed reference observations used to construct a response |
+| Response object | The change of a condition relative to a declared reference in one state representation |
+| Comparison unit | A task-defined group of response objects used for similarity, retrieval, or prediction |
+| Split | A materialized train/validation/test partition with an explicit held-out biological axis |
 
-`instance_id` is the persisted instance-level key. Any contiguous source-local
-row numbering is an internal construction and ordering helper, not a required
-additional identity field.
+## Condition identity
 
-## Source Trace Keys
+A harmonized condition registry should preserve at least:
 
-LINCS retains `sig_id` as its source trace. scPerturb retains a separate raw-cell
-trace key:
+- `condition_id`
+- `source`
+- `readout_modality`: `transcriptomics` or `morphology`
+- `intervention_type`: `genetic`, `chemical`, `control`, or `combination`
+- `intervention_mode`: source-specific normalized mode such as `CRISPRi`, `CRISPRa`, `expression`, `compound`
+- `perturbation_id`: compound/reagent/combination identity
+- `target_set`: canonical target set when known
+- `cell_context`
+- `time_hr`
+- `dose_value`
+- `dose_unit`
+- `replicate_id`
+- `batch_id`
+- `source_trace`
 
-```text
-cell_id = {dataset}::{raw_internal_cell_name}
-```
+Combination conditions additionally preserve `combination_members` and any interpretable constituent strengths.
 
-`cell_id` identifies the source-native treated or control cell used by the
-scPerturb pairing and FM handoff. It is not a replacement for the benchmark
-`instance_id`; downstream benchmark-facing tables continue to use
-`instance_id`.
+## State representation identity
 
-The source-specific extraction of `raw_internal_cell_name`, cell line,
-perturbation identity, time, dose, local context, and control rows is frozen in
-the [scPerturb preprocessing contract](preprocessing/scperturb.md).
+Every state object records:
 
-## Perturbation Identity
+- `condition_id`
+- `state_representation`
+- `feature_index_version`
+- `n_observations`
+- aggregation/distribution semantics
+- source build manifest
 
-The shared perturbation vocabulary is:
+Primary representation vocabulary:
 
-- `chemical`
-- `genetic`
+Transcriptomics:
 
-Chemical target-set strings use uppercase tokens, duplicate removal, stable or
-alphabetical canonical ordering as specified by the source contract, and `|`
-as the delimiter. Multi-target chemicals remain one instance row. Task2
-membership expansion is a cohort-construction operation and does not change
-the row identity field.
+- `Gene`
+- `Pathway`
+- `FM:<model>`
 
-Genetic rows use one perturbed gene by default. The current Task1 scPerturb
-internal slice is the scoped exception that may retain canonicalized multi-gene
-sets. The current Task1 cross slice accepts matched single-gene genetic rows
-only. These are Task1 scope rules and must not be generalized to future tasks
-without an explicit contract change.
+Morphology:
 
-## Metadata Normalization
+- `CellProfiler`
+- `DeepMorphology:<model>`
 
-- `time_hr` is populated only from explicit numeric source time fields and is
-  recorded in hours.
-- Sentinel, invalid, or missing source time values become `NA`.
-- `dose_um` is populated only from explicit numeric doses with a convertible
-  molar unit.
-- Accepted standardization units are `uM`, `micromolar`, and `nM`; `nM` is
-  converted to `uM`.
-- Mass-based units, volume units, unitless values, and other non-convertible
-  encodings become `NA` in `dose_um`.
-- Raw time and dose values remain in source-specific extension columns.
+## Response identity
 
-## Delta-Space Semantics
+Every response object records:
 
-The instance vector represents perturbation response after the source-specific
-delta construction:
+- `response_id`
+- `condition_id`
+- `reference_id`
+- `state_representation`
+- `response_view`: `Delta` or `SystemaResidual`
+- `feature_index_version`
+- numerator/condition observation count
+- reference observation count
+- response-construction version
 
-- LINCS `Gene delta` is the retained Level5 signature vector directly, without
-  additional normalization or clipping in the preprocessing stage.
-- scPerturb `Gene delta` is the treated cell expression minus the mean of its
-  deterministically sampled paired controls, without z-scoring or clipping in
-  the preprocessing stage.
-- FM deltas are model-latent flow-space displacement vectors constructed from
-  the paired controls and treated cell; their exact handoff and acceptance
-  rules are in the [FM representation contract](representations/fm.md).
+A response object is not a scalar distance. It retains direction/coordinates in its representation space unless the representation itself is a distributional object.
 
-The shared [Gene representation contract](representations/gene.md) records the
-feature-axis and storage rules. The [Pathway representation contract](representations/pathway.md)
-records the projection-specific gene handling.
+## Target identity
 
-## Scope And Ownership
+A target set is canonicalized as uppercase stable tokens. Multi-target compounds remain multi-target conditions. Task-specific target membership may expand a condition into multiple target-linked comparison units, but expansion never rewrites the source perturbation identity.
 
-Task-specific membership, matching, comparison direction, and lawful units are
-owned by [Task1](../tasks/task1.md) and [Task2](../tasks/task2.md). Source-local
-preprocessing owns source ingestion and delta construction. Snapshot assembly
-owns canonical registries, block routing, and shared feature alignment. Result
-schemas are owned by [task output schemas](../tasks/output_schemas.md).
+## Context identity
+
+`cell_context` is the biological context used by a task split or match, normally a cell line/type. Dataset, batch, plate, source, and replicate are separate fields and may not be silently conflated with biological context.
+
+## Independence
+
+Cells, images, wells, signatures, compounds, targets, and experiments are different sampling levels. Task contracts identify which level defines independent resampling or generalization.
