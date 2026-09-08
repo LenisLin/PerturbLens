@@ -2,71 +2,42 @@
 
 Last updated: 2026-09-08
 
-## Scientific Reframing
+## Active scientific architecture
 
-The human lead approved reframing the project from the Task1/Task2-centered M2M-Bench benchmark into **PerturbLens**, a response-centric study of cellular perturbation information across biological boundaries.
+The project is fully defined as PerturbLens. The active main-result sequence is R1 Framework, R2 Genetic, R3 Chemical, R4 Cross-intervention, R5 Cross-readout, and R6 Combination.
 
-The active scientific architecture is now:
+There are no active historical Task1/Task2 contracts in the current architecture.
 
-```text
-R1 framework
-R2 genetic learnability
-R3 chemical learnability
-R4 cross-intervention chemical/genetic conservation
-R5 cross-readout transcriptomics/morphology conservation
-R6 combination compositionality
-```
+## Design status
 
-The three shared evaluation families are population similarity, instance retrieval, and model prediction. Primary state-representation families are Gene/Pathway/FM for transcriptomics and CellProfiler/deep embeddings for morphology. Primary response views are control delta and a Systema-style perturbed reference.
+Approved conceptual components:
 
-See [project](../project.md), [proposal](../research/proposal.md), [result architecture](../research/result_architecture.md), and [study map](../tasks/study_map.md).
+- transcriptomic state representations: Gene, Pathway, FM;
+- morphology state representations: CellProfiler and deep morphology embeddings;
+- response views: control Delta and SystemaResidual;
+- evidence families: population similarity, instance retrieval, model prediction;
+- R2 genetic split ladder: inner -> unseen context -> unseen target;
+- R3 chemical split ladder: inner -> unseen context -> unseen compound -> unseen target;
+- time/dose as R3 explanatory covariates;
+- R4 chemical-genetic target-linked conservation;
+- R5 transcriptomic-morphological response conservation;
+- R6 genetic/chemical combination compositionality.
 
-## Migration Status
+## Execution status
 
-### Completed in the current reframing change
+The architectural reset does not certify any new R2-R6 production analysis. Source inventories, response-build manifests, split manifests, prediction runs, morphology ingestion, and combination runs must be generated under the PerturbLens contracts and storage roots.
 
-- PerturbLens scientific scope and R1-R6 manuscript logic documented.
-- Literature/ecosystem analysis added with current competitive risks.
-- `docs/research/` introduced as a research-rationale domain.
-- Shared response-construction and prediction-evaluation vocabularies introduced.
-- Legacy Task1/Task2 mapped to the new Result architecture without changing their existing output semantics.
+Existing raw external source files can be reused only through new source manifests; prior project-specific derived outputs are not active PerturbLens evidence.
 
-### Retained legacy execution core
+## Immediate execution blockers
 
-Existing Task1/Task2 contracts, scripts, schemas, runbook stages, NAS paths, and historical artifacts remain valid under their original meanings.
+1. exact source/coverage inventory for R2-R6;
+2. final Systema reference-pool semantics per task;
+3. frozen Cell-Eval2/VCC2026 package/version/configuration;
+4. model registry and allowed input information for each split;
+5. morphology dataset selection and matching tier;
+6. combination source selection and interaction null definitions.
 
-No existing `task1_*` or `task2_*` file is automatically a PerturbLens result. Reuse requires an explicit alignment proof or a new task contract.
+## Evidence boundary
 
-The repository/package/storage identifiers containing `M2M` or `m2mbench` are retained during migration for provenance and implementation compatibility. Scientific naming has changed before source/storage renaming.
-
-## Not Yet Implemented Or Verified
-
-The following are approved research directions but **not completed analyses**:
-
-- R2 unseen-context and unseen-target prediction tasks;
-- R3 new-compound, unseen-compound, and unseen-target prediction tasks;
-- VCC2026/Cell-Eval2 prediction metric implementation in this repository;
-- task-specific legal Systema reference pools across all result families;
-- morphology data ingestion, CellProfiler extraction, deep image embeddings, or morphology response contracts;
-- transcriptomic-morphological cross-readout analyses;
-- expanded FM manuscript coverage beyond currently materialized/approved legacy surfaces;
-- genetic or chemical combination task contracts and interaction nulls;
-- new PerturbLens result tables, figures, or numerical claims.
-
-Documentation presence is not evidence of execution.
-
-## Immediate Work Queue
-
-1. Freeze task-specific response-construction semantics and Systema reference pools.
-2. Freeze the Cell-Eval2/VCC2026 version and morphology metric analogues.
-3. Build a source/coverage inventory for R2, R3, R5, and R6.
-4. Write executable task contracts for genetic and chemical learnability.
-5. Verify which legacy Task1/Task2 outputs can lawfully feed R2-R4.
-6. Select and contract morphology sources before implementing R5.
-7. Select combination sources and null models before implementing R6.
-
-## Evidence Boundary
-
-The existing [evidence index](../tasks/evidence_index.md) remains authoritative for legacy Task1/Task2 evidence. New PerturbLens evidence entries must point to task contracts, split manifests, response-construction versions, metric versions, result tables, and validation assertions.
-
-No benchmark performance or manuscript conclusion is certified by the reframing itself.
+Only artifacts produced or explicitly revalidated under current PerturbLens contracts may support PerturbLens manuscript claims.

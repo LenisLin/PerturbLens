@@ -1,199 +1,72 @@
 # PerturbLens Response Construction
 
-## Role
+## Purpose
 
-This document owns the project-level vocabulary for constructing perturbation responses from state representations. Source-specific preprocessing still owns how raw observations become lawful state vectors. Task contracts own legal control/reference pools and comparison units.
+State representation describes an observed state. Response construction describes how that state changes relative to an explicit reference. Response construction is upstream of similarity/retrieval/prediction metrics.
 
-The response object is conceptually:
+Primary response views are `Delta` and `SystemaResidual`.
 
-```text
-R = Response(state_perturbed, reference_state)
-```
+## 1. Delta
 
-Response construction is separate from the downstream similarity, retrieval, or prediction metric.
-
-## Status
-
-The two primary response views below are scientifically approved for PerturbLens. Exact task-specific reference pools, standardization rules, zero-vector handling, and distributional extensions remain implementation details to freeze before production analyses.
-
-Legacy M2M Task1/Task2 delta objects keep their historical semantics until explicitly migrated.
-
-## State Representation Families
-
-Transcriptomics:
-
-- Gene;
-- Pathway;
-- FM embeddings.
-
-Morphology, once a formal source/representation contract is approved:
-
-- CellProfiler features;
-- fixed deep morphology embeddings.
-
-All response comparisons require a fixed representation definition and aligned feature identity within that representation.
-
-## Control-Referenced Response
-
-For a lawful condition `k`, define the population centroid in representation space:
+For condition `k` in state representation `r`:
 
 ```text
-mu_pert(k) = mean state of perturbation condition k
-mu_ctrl(k) = mean state of the matched legal control pool
+Delta(k,r) = mean_state(perturbed k,r) - mean_state(matched controls k,r)
 ```
 
-The basic control-referenced response is:
+For source-native perturbational signatures already expressed as an effect relative to controls, the source-native effect may instantiate `Delta` if the source contract records that semantics.
+
+### Matched-control requirements
+
+Control references must be lawful for the source and task. Matching priority is declared before response construction and may include source/dataset, biological context, experimental block, time, and assay design.
+
+A response manifest records the exact control pool and counts for every condition.
+
+## 2. SystemaResidual
+
+Systema-style evaluation asks whether a perturbation differs from the broader perturbed population rather than only from control.
+
+For a condition `k`:
 
 ```text
-Delta_control(k) = mu_pert(k) - mu_ctrl(k)
+SystemaResidual(k,r) = mean_state(k,r) - mean_state(lawful perturbed reference pool,r)
 ```
 
-This view measures the total state displacement associated with the perturbation relative to control.
+The perturbed reference pool is task-specific but must be fixed before scoring. It should match biological context/readout/source constraints required by the task and must avoid unintended target/query leakage where relevant.
 
-### Interpretation
+SystemaResidual is a **perturbation-specific view**, not a corrected biological truth. Shared stress, cell-cycle, toxicity, or acquisition effects may be removed or downweighted even when biologically real.
 
-- direction identifies which coordinates/programs/features change;
-- norm or other magnitude summaries measure response strength;
-- similarity between two delta vectors measures whether their response geometry aligns.
+## Reference-pool registry
 
-Response strength is not equivalent to response specificity.
+Every response object references a persisted registry containing:
 
-### Transcriptomics
+- `reference_id`
+- pool eligibility rule
+- included condition/observation IDs
+- excluded IDs and reasons
+- context/readout/source/time/dose constraints
+- leave-one-condition-out behavior where applicable
+- observation count
 
-For Gene/Pathway spaces, coordinate-wise effects are interpretable at the corresponding feature resolution.
+## Morphology variants
 
-For FM spaces, delta is a displacement in a fixed learned representation. Its coordinates are not automatically treated as biological variables.
-
-### Morphology
-
-For CellProfiler features, control-based normalization/sphering must be defined upstream of or jointly with the delta contract. The response may then be expressed as a standardized feature displacement.
-
-For deep image embeddings, the encoder and image aggregation procedure must be fixed before response construction.
-
-## Systema-Style Perturbation-Specific Reference
-
-Systema motivates evaluating perturbation-specific effects relative to the average of perturbation-specific centroids rather than only the control centroid.
-
-For a task-defined lawful reference set `P_ref` of perturbations:
+The same response views apply in CellProfiler or fixed deep-morphology state spaces after morphology-specific normalization:
 
 ```text
-mu_perturbed_ref = mean_{p in P_ref}(mu_pert(p))
-Delta_systema(k) = mu_pert(k) - mu_perturbed_ref
+MorphDelta = perturbed morphology state - matched control morphology state
+MorphSystemaResidual = perturbed morphology state - lawful perturbed morphology reference
 ```
 
-The task contract must define `P_ref` so that the reference is leakage-safe and comparable across queries/splits.
+No direct numeric comparison is made between transcriptomic and morphology vector norms without within-space calibration.
 
-### Interpretation
+## Response strength
 
-`Delta_systema` emphasizes how perturbation `k` differs from the average perturbed state. It suppresses a component shared by many perturbations and therefore focuses evaluation on perturbation-specific landscape structure.
+For a vector response `R`, `||R||` may summarize magnitude after the representation's declared scaling. Response strength is not response identity. Equal norm can accompany orthogonal or opposite biological changes.
 
-It is **not** called a corrected biological truth. The removed systematic component may contain technical bias, selection effects, or real shared biology.
+## Single-cell/distributional information
 
-Reference: Viñas Torné et al., Systema, https://doi.org/10.1038/s41587-025-02777-8
+Primary Delta/SystemaResidual objects are directional centroid responses. When single-cell or single-image distributions are used, distributional summaries are retained separately rather than being mislabeled as centroid deltas.
 
-## Control And Systema Views Must Be Parallel
+## Provenance
 
-Where feasible, key claims should be checked under both views:
-
-- control view: total perturbation-associated effect;
-- Systema view: perturbation-specific effect relative to the perturbed landscape.
-
-A result that appears only under one view is scale/reference-dependent and should be interpreted accordingly.
-
-## Response Magnitude
-
-For a response vector `Delta` in a fixed representation:
-
-```text
-response_strength = ||Delta||
-```
-
-The norm definition must be representation-specific and versioned.
-
-Do not compare raw norms across Gene, Pathway, FM, CellProfiler, and deep morphology spaces as if they had common units.
-
-Cross-representation comparisons should use within-space calibration, rank/quantile summaries, or task-specific anchors.
-
-## Standardized Effects
-
-A standardized response may be useful when features have strongly different background scales:
-
-```text
-Delta_std_j = (mu_pert_j - mu_ref_j) / s_ref_j
-```
-
-The reference variance `s_ref` must be estimated from an independent/legal pool and its zero/near-zero policy must be explicit.
-
-Standardization changes the estimand from absolute displacement to displacement relative to background variability.
-
-## Distributional Response Extensions
-
-Centroid deltas cannot distinguish all population-distribution changes. Where the scientific question concerns heterogeneity or state occupancy, supplementary response objects may include:
-
-- changes in state/cluster occupancy;
-- changes in feature variance or covariance;
-- MMD/kernel mean embeddings;
-- OT/Sinkhorn transport summaries;
-- other explicitly distribution-sensitive statistics.
-
-These extensions require separate metric and inference contracts. They must not be inferred from the label `e_distance` alone.
-
-## Time And Dose
-
-For chemical analyses, a response is indexed by time and dose when those values are available:
-
-```text
-R(compound, context, time, dose)
-```
-
-The primary R3 task treats time/dose as explanatory covariates. It must not pool incompatible conditions and then interpret their variability purely as measurement error.
-
-A dedicated dynamic response task requires dense enough time/dose coverage and a separate approval.
-
-## Combination Response Boundary
-
-A combination response is constructed from the observed combination condition in the same representation/reference view as its constituent singles.
-
-A compositional null is a separate object:
-
-```text
-R_expected(A+B) = Null(R_A, R_B)
-```
-
-The interaction residual is then:
-
-```text
-I(A,B) = R_observed(A+B) - R_expected(A+B)
-```
-
-The null depends on the response scale. Simple vector addition is not automatically valid for every transformed, standardized, occupancy, or nonlinear embedding space.
-
-Systema's matching-mean baseline is one precedent for a strong simple combination reference. Exact R6 nulls belong in the combination task contract.
-
-## Required Provenance Fields
-
-Every emitted response object should be traceable to at least:
-
-- source dataset;
-- cellular context;
-- perturbation identity and intervention type;
-- representation name/version;
-- response view (`control` or `systema` or approved extension);
-- control/reference pool definition;
-- time/dose when available;
-- aggregation level;
-- source instance/replicate identifiers;
-- response-construction version.
-
-## Pending Implementation Decisions
-
-Before production PerturbLens analyses, freeze:
-
-- task-specific legal Systema reference pools;
-- morphology normalization and aggregation;
-- response-norm choices per representation;
-- zero/constant/missing-feature handling;
-- any standardized-effect definition;
-- any distributional response family;
-- interaction nulls for R6;
-- migration rules from existing Task1/Task2 delta objects.
+Every response build records source/state manifests, representation version, response view, reference registry, feature index, seed/subsampling where relevant, and output hash.

@@ -1,202 +1,76 @@
-# PerturbLens Prediction Evaluation
+# Model Prediction Evaluation
 
-## Role
+## Purpose
 
-This document owns the project-level prediction-evaluation vocabulary. Task contracts own train/test legality, available input information, baselines, and aggregation units. This document does not define model architectures.
+Prediction evaluation measures **learnability** under a declared out-of-sample split. It is distinct from population similarity and retrieval of measured responses.
 
-Prediction is the third PerturbLens evidence level after population geometry and retrieval:
+## Versioned transcriptomic metric family
 
-```text
-population similarity -> response geometry
-retrieval             -> response specificity
-prediction            -> out-of-sample learnability
-```
+The primary transcriptomic prediction metric family follows the Arc Institute `cell-eval2` VCC2026 preset and must record the exact package version and preset/config digest used for every production run.
 
-A high similarity score is not sufficient evidence of prediction, and a high prediction score may still be dominated by shared systematic response unless perturbation specificity is tested.
+As of the current design freeze, the six scored VCC2026 members are:
 
-## VCC2026 / Cell-Eval2 Transcriptomic Metric Family
+- `pds_cosine` — perturbation discrimination/separability;
+- `expr_mse_unbiased_capped_norm` — sampling-aware expression error;
+- `de_wilcoxon_direction_fidelity_yield_raw` — correctness of predicted DE direction;
+- `de_wilcoxon_direction_reach_raw` — depth over which predicted directions remain correct;
+- `de_wilcoxon_sig_jaccard` — agreement of significant responding-gene sets;
+- `de_wilcoxon_lfc_nmae` — normalized accuracy of predicted log-fold changes.
 
-PerturbLens adopts the conceptual coverage of the 2026 Virtual Cell Challenge metric panel as the primary transcriptomic prediction family.
+The repository should call the pinned `cell-eval2` implementation rather than reimplementing these metrics unless a compatibility test is provided.
 
-The current Cell-Eval2 `vcc2026` scored members are:
+## Baseline and reference calibration
 
-| Metric | Scientific role |
-| --- | --- |
-| `pds_cosine` | perturbation discrimination / separability |
-| `expr_mse_unbiased_capped_norm` | overall expression-profile error adjusted for sampling noise and calibrated in the VCC2026 specification |
-| `de_wilcoxon_direction_fidelity_yield_raw` | whether predicted perturbation-effect directions are correct |
-| `de_wilcoxon_direction_reach_raw` | how deeply the ranked response preserves correct directions |
-| `de_wilcoxon_sig_jaccard` | overlap of significant responding-gene sets |
-| `de_wilcoxon_lfc_nmae` | log-fold-change effect-size accuracy |
+Prediction results report both raw metric values and the VCC-style calibration when available. The calibrated scale uses an explicit low/no-information baseline and an empirical replicate/reference anchor; a score of 1 is a reference landmark, not a mathematical ceiling.
 
-Reference implementation/specification: https://github.com/ArcInstitute/cell-eval2
+The exact scale/baseline artifacts and package semantics must be versioned because `cell-eval2` has evolved during VCC2026.
 
-Exact PerturbLens parameterization must be versioned against a frozen Cell-Eval2 specification. Metric aliases must not be mixed across versions without provenance.
+## Split-specific model inputs
 
-## Transcriptomic Interpretation Groups
-
-The six metrics should not be treated as six arbitrary leaderboard numbers. They cover five response-information families:
-
-1. **identity/specificity** — PDS;
-2. **global profile accuracy** — expression error;
-3. **direction** — direction fidelity and reach;
-4. **responding-feature identity** — significant-set overlap;
-5. **effect magnitude** — log-fold-change error.
-
-Result sections should ask which information family fails under a harder biological boundary.
-
-## Calibration And Anchors
-
-VCC2026 uses baseline/replicate anchoring so that scores can be interpreted relative to a simple baseline and experimental-reference reproducibility.
-
-PerturbLens may adopt analogous calibration where legal, but must record:
-
-- the exact baseline;
-- the exact replicate/reference anchor;
-- whether calibration is per dataset/context/representation;
-- direction of better performance;
-- clipping or normalization rules.
-
-A normalized value of `1` is an empirical reference anchor, not a mathematical ceiling. A value of `0` is baseline-relative, not biological absence of information.
-
-## Morphology Prediction Analogues
-
-Morphology requires conceptually matched rather than mechanically copied metrics.
-
-### CellProfiler Feature Space
-
-Candidate primary family:
-
-#### Morphology perturbation discrimination
-
-Rank the predicted morphology profile against measured perturbation profiles using cosine or another approved morphology distance.
-
-#### Morphology profile error
-
-Compare predicted and measured control-normalized morphology feature profiles using MSE/MAE or a covariance-aware error if justified.
-
-#### Morphology direction fidelity
-
-For each interpretable feature with a declared response direction, quantify whether predicted and measured effects share the sign/direction.
-
-#### Morphology direction reach
-
-Rank morphology features by observed or predicted effect strength under a frozen rule and quantify how deep correct directionality is retained.
-
-#### Morphology significant-feature overlap
-
-Compare sets of features declared responsive under an approved replicate-aware test. This metric requires a morphology inference contract; it must not be implemented by arbitrary thresholding.
-
-#### Morphology effect-size error
-
-Compare standardized or scale-appropriate feature-level effects. Raw features with incompatible units must not be averaged without normalization.
-
-### Deep Morphology Embedding Space
-
-Arbitrary latent dimensions are not assumed to have stable feature identity. Primary metrics should therefore emphasize:
-
-- embedding profile error/distance;
-- perturbation discrimination;
-- same-perturbation/target retrieval;
-- distributional agreement where object-level embeddings are retained.
-
-Feature-significance Jaccard and direction metrics are secondary diagnostics unless the embedding coordinates have an explicit stable interpretation.
-
-## Prediction Task Inputs
-
-Every prediction task must specify exactly what information is available at inference.
+Every task contract defines what information a model may use.
 
 Examples:
 
-### Genetic unseen context
+- unseen context: context-specific control state may be allowed while perturbed test observations are forbidden;
+- unseen target: external gene/target representations may be allowed if frozen independently of the test perturbation outcomes;
+- unseen compound: chemical structure or target annotation may be allowed according to the split definition.
 
-Possible allowed inputs:
+Model prediction without an explicit input-information contract is invalid.
 
-- unperturbed state of the held-out context;
-- target identity and approved external target representation.
+## Required baselines
 
-The held-out context's perturbed responses must not leak into training or calibration.
+At minimum, each prediction task includes:
 
-### Genetic unseen target
+- context/control or mean-response baseline appropriate to the split;
+- simple linear/ridge or additive baseline where lawful;
+- task-relevant identity/target baseline if it can generalize without test leakage;
+- complex models selected before test inspection.
 
-One-hot target IDs cannot support true target extrapolation. A model evaluated on unseen targets must use target information available independently of the held-out perturbation responses, such as sequence or approved functional/network features.
+## Morphology conceptual variants
 
-### Chemical unseen compound / seen target
+CellProfiler feature prediction can mirror the VCC2026 concepts without pretending the metrics are numerically identical:
 
-Allowed perturbation inputs may include molecular structure and independently sourced target annotation. Response evidence for the held-out compound is excluded.
+- `morph_pds_cosine`: perturbation discrimination in morphology response space;
+- `morph_mse_norm`: normalized profile error after frozen morphology scaling;
+- `morph_direction_fidelity`: correctness of signed feature effects;
+- `morph_direction_reach`: depth of correctly directed feature ranking;
+- `morph_sig_jaccard`: overlap of significantly responding morphology features;
+- `morph_effect_nmae`: normalized morphology effect-size error.
 
-### Chemical unseen target
+These variants require a dedicated validation/calibration study before being treated as primary scored metrics.
 
-Target-level response data for that target must be excluded according to the task contract. This is stricter than unseen compound.
+For deep morphology embeddings, primary evaluation is limited to profile error/similarity, PDS/retrieval, and distributional/profile-level metrics; feature-significance semantics are not assumed for latent dimensions.
 
-### Cross-modal prediction
+## Provenance
 
-Two distinct tasks must not be conflated:
+Every prediction run records:
 
-1. `observed post-perturbation readout A -> post-perturbation readout B`;
-2. `control + perturbation information -> both post-perturbation readouts`.
-
-The first measures cross-readout information. The second is de novo virtual-cell prediction.
-
-### Combination prediction
-
-The model must be compared against strong constituent-based baselines. The task must record whether zero, one, or both constituent singles were observed during training.
-
-## Baseline Families
-
-At minimum consider, where lawful:
-
-- no-change/control baseline;
-- mean perturbed response;
-- target/compound mean response;
-- nearest-neighbor response;
-- simple linear/ridge model;
-- matching-mean/additive combination baseline;
-- complex/foundation-model predictor.
-
-A baseline is part of the scientific estimand. It defines what additional information the model is claimed to recover.
-
-## Aggregation
-
-Do not silently pool across:
-
-- datasets;
-- cellular contexts;
-- perturbation types;
-- target novelty regimes;
-- representations;
-- response views;
-- readout modalities.
-
-Macro/micro averaging, weighting, missing-query handling, and confidence intervals belong in each task analysis contract.
-
-## Required Prediction Output Context
-
-Every prediction summary should preserve or be traceable to:
-
-- task/generalization regime;
-- dataset/source;
-- cellular context;
-- perturbation/target/compound identity;
-- intervention type;
-- readout modality;
-- state representation;
-- response view;
-- model/baseline identity and version;
-- allowed inference information;
-- metric name/version;
-- denominator and exclusion fields;
-- train/test split manifest;
-- calibration/anchor information if used.
-
-## Pending Decisions
-
-Before production implementation, freeze:
-
-- exact Cell-Eval2 commit/version and metric parameters;
-- baseline/replicate anchoring strategy outside VCC data;
-- morphology feature significance testing;
-- morphology feature normalization and metric formulas;
-- deep morphology embedding metric family;
-- confidence intervals and multiple-comparison strategy;
-- model inclusion policy for R2/R3/R5/R6.
+- split manifest;
+- model name/version/checkpoint;
+- training sources;
+- permitted input information;
+- feature/response versions;
+- metric package/config versions;
+- random seeds;
+- baseline/reference artifacts;
+- per-condition and aggregate outputs.

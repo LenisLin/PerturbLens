@@ -1,100 +1,100 @@
 # PerturbLens Project Definition
 
-## Research Position
+## Research position
 
-PerturbLens is a response-centric characterization study of cellular perturbations. Its primary scientific object is the **perturbation response**, not a specific prediction model or embedding.
+PerturbLens is a descriptive and characterization study of cellular perturbation responses. It studies **response information** rather than treating model performance as the scientific object.
 
-The study asks how perturbation-response information is organized and how much of it remains reproducible, identifiable, learnable, transferable, cross-modal, and compositional as biological novelty increases.
-
-## Central Question
+## Central question
 
 > What information in cellular perturbation responses is reproducible within perturbation classes, transferable across cellular contexts and targets, conserved across intervention and readout modalities, and compositional under combined perturbations?
 
-The study uses a boundary ladder:
+The project asks how response information changes as increasingly difficult biological boundaries are crossed:
 
 ```text
-within
-  -> cellular context
-  -> target / compound
-  -> intervention modality
-  -> readout modality
-  -> composition
+within perturbation
+-> cellular context
+-> target / compound novelty
+-> intervention modality
+-> readout modality
+-> perturbation composition
 ```
 
-Each boundary adds a stronger biological change. The study does not equate a drop in model score with a single failure mechanism; it asks which response information is lost or retained at each boundary.
-
-## Four-Layer Analysis Framework
+## Conceptual layers
 
 ### 1. Data
 
-Current transcriptomic sources are LINCS and scPerturb. Candidate extensions include matched transcriptomic-morphological perturbation resources and genetic/chemical combination datasets. Candidate sources do not enter production scope until a data contract is approved.
+A perturbation observation is defined by intervention identity, target annotation where applicable, cellular context, readout modality, time, dose or perturbation strength, replicate/source information, and combination membership where applicable.
 
-Dose and time are retained as explanatory covariates for chemical analyses unless a future dense dose-time design justifies a dedicated dynamic task.
+### 2. State representation
 
-### 2. State Representation
-
-Primary transcriptomic families:
+Primary transcriptomic representations:
 
 - `Gene`
 - `Pathway`
-- transcriptomic foundation-model (`FM`) embeddings
+- `FM`
 
-Primary morphology families:
+Primary morphology representations:
 
-- interpretable CellProfiler-derived morphology features
-- fixed deep morphology embeddings
+- `CellProfiler`
+- `DeepMorphology`
 
-A representation is an observation lens. No representation is assumed to be a complete or privileged description of biological state.
+No representation is assumed to be the biological truth. Each is a lens that preserves and compresses different response information.
 
-### 3. Response Construction
+### 3. Response construction
 
 Primary response views:
 
-- control-referenced delta response;
-- Systema-style perturbation-specific reference response.
+- `Delta`: perturbation state relative to matched control;
+- `SystemaResidual`: perturbation state relative to an explicitly lawful perturbed reference pool, emphasizing perturbation-specific structure.
 
-The response-construction contract is maintained in [data/response_construction.md](data/response_construction.md). These views are not interchangeable: the control view measures total perturbation-associated displacement, whereas the Systema-style view emphasizes perturbation-specific structure relative to the average perturbed state.
+The response view is separate from the downstream metric.
 
-### 4. Evaluation
+### 4. Evidence family
 
-Three evidence families are used throughout the study:
+Every major biological relation is studied through three complementary evidence families where lawful:
 
-- **population similarity**: whether two response structures are geometrically similar;
-- **instance retrieval**: whether response identity/specificity is retained;
-- **model prediction**: whether response information can be learned out of sample under a declared generalization regime.
+- population similarity: is response geometry conserved?
+- instance retrieval: is perturbation or target identity retained?
+- model prediction: can response information be learned out of sample?
 
-Metric ownership remains in `docs/metrics/`.
+## Main Results
 
-## Main Result Architecture
+### R1 — Framework
 
-- **R1 — Framework**: data, state representations, response construction, comparison units, and evaluation definitions.
-- **R2 — Genetic learnability**: inner split -> cross-cellular-context -> cross-target.
-- **R3 — Chemical learnability**: inner split -> cross-context -> cross-compound/same-target -> unseen compound -> unseen target; dose/time as explanatory covariates.
-- **R4 — Cross-intervention**: chemical-genetic conservation of target-linked response information.
-- **R5 — Cross-readout**: transcriptomic-morphological conservation, shared geometry, cross-modal retrieval/prediction, and modality-specific response structure.
-- **R6 — Combination**: compositionality, interaction residuals, and response components not explained by constituent single perturbations.
+Defines data, state representations, response construction, metrics, comparison axes, and coverage. R1 does not use model ranking as a biological conclusion.
 
-The detailed manuscript logic is maintained in [research/result_architecture.md](research/result_architecture.md).
+### R2 — Genetic response learnability
 
-## Relationship To M2M-Bench
+Tests inner/replicate structure, unseen cellular context, and unseen target. The scientific output is which components of genetic response remain learnable as novelty increases.
 
-M2M-Bench is the historical execution core from which PerturbLens grows.
+### R3 — Chemical response learnability
 
-- Retained Task1 provides existing within-source and cross-source concordance infrastructure.
-- Retained Task2 provides the current chemical-genetic target-matched comparison infrastructure.
-- Existing Task1/Task2 outputs keep their original semantics and names.
-- New generalization, prediction, morphology, cross-readout, expanded-FM, and combination analyses require explicit PerturbLens contracts.
+Tests inner structure, unseen cellular context, unseen compound with known target information, and unseen target. Time and dose are explanatory covariates rather than a standalone main result.
 
-The mapping is maintained in [tasks/study_map.md](tasks/study_map.md).
+### R4 — Cross-intervention conservation
 
-## Contribution Boundary
+Tests what target-linked response information is preserved between chemical and genetic perturbations.
 
-PerturbLens is not primarily a new virtual-cell predictor and is not a representation leaderboard. Its intended contribution is a common response-centric framework for asking what biological information survives increasingly difficult boundaries.
+### R5 — Cross-readout conservation
 
-A successful study may contain positive, negative, or uncertain findings. The framework does not assume that response structure is low-dimensional, that chemical and genetic interventions are equivalent, that transcriptomics and morphology encode the same biology, or that combination responses are additive.
+Tests what perturbation-response information is shared or modality-specific between transcriptomics and morphology.
 
-## Claim Boundary
+### R6 — Combination compositionality
 
-Similarity does not establish causal mechanism equivalence. Cross-modal correspondence does not establish an RNA-to-morphology causal mapping. A learned embedding is not treated as the true cellular state. A combination residual is not automatically molecular synergy. Model performance is not treated as an absolute information-theoretic ceiling.
+Tests whether combined perturbation responses are explained by lawful single-perturbation references and whether reproducible interaction residuals remain.
 
-Claims remain bounded by the datasets, representations, response constructions, legal comparison units, evaluation protocols, and evidence actually used.
+## Active source scope
+
+Current transcriptomic source families are LINCS and human scPerturb-derived datasets. Morphology and combination source sets must pass explicit source/coverage freezes before R5 or R6 production analysis. Source availability does not imply a lawful task.
+
+## Contribution boundary
+
+PerturbLens does not claim that:
+
+- a complex model's failure establishes a mathematical prediction ceiling;
+- a state embedding is a complete representation of cellular state;
+- chemical-genetic similarity establishes causal equivalence;
+- cross-readout association establishes a causal RNA-to-morphology mapping;
+- a non-additive vector residual is automatically biological synergy.
+
+The intended contribution is a response-centric map of what information is observed, identifiable, transferable, cross-boundary conserved, and compositional under explicitly defined representations and comparison regimes.

@@ -1,163 +1,69 @@
-# Manuscript Writing Standards
+# PerturbLens Manuscript Writing Standards
 
 ## Purpose
 
-This document defines the current scientific writing requirements for
-M2M-Bench. It governs how approved methods and evidence are expressed; it does
-not create new analyses, numerical results, citations, or journal-specific
-submission requirements.
+These standards govern how PerturbLens methods and evidence are expressed. They do not create new analyses or numerical claims.
 
-The manuscript must remain consistent with:
+## Evidence-bounded language
 
-- docs/project.md
-- docs/roadmap.md
-- docs/tasks/task1.md
-- docs/tasks/task2.md
-- docs/data/sources.md
-- docs/data/object_model.md
-- docs/metrics/concordance.md
-- docs/metrics/retrieval.md
-- docs/metrics/aggregation.md
-- docs/visualization/figure_plan.md
-- docs/governance/scientific_standards.md
-
-## Evidence-Bounded Language
-
-Write each claim so that its strength matches the study design and evidence:
-
-- distinguish observation, interpretation, recommendation, and conclusion;
-- state association rather than causation unless the design supports causal
-  language;
+- distinguish observation, inference, hypothesis, and recommendation;
+- use causal language only when the design supports it;
 - report effect estimates with uncertainty where available;
-- report null, negative, excluded, and unresolved findings when they affect
-  interpretation;
-- state population, dataset, cell-line, perturbation, representation, and
-  endpoint limits when they affect generalizability;
-- do not use favorable secondary or exploratory findings to replace the
-  prespecified primary result;
-- do not describe an analysis as robust, general, or reproducible without
-  naming the design or verification evidence supporting that description.
+- retain null, negative, excluded, and unresolved findings when relevant;
+- state source, context, perturbation, representation, response view, and split limits;
+- do not call an analysis robust/general/reproducible without naming the supporting design.
 
-When support is missing, state Insufficient evidence and identify the next
-verification step. Do not replace missing data, mechanism, or citation support
-with plausible prose.
+## Locked scientific vocabulary
 
-## Locked Terminology
+- **State representation**: Gene, Pathway, FM, CellProfiler, or DeepMorphology.
+- **Response view**: Delta or SystemaResidual.
+- **Population similarity**: measured response geometry/distribution comparison.
+- **Retrieval**: response specificity/identity in a lawful gallery.
+- **Prediction**: out-of-sample learnability under a declared split.
+- **Cross-intervention**: chemical/genetic boundary.
+- **Cross-readout**: transcriptomics/morphology boundary.
+- **Combination residual**: deviation from a declared combination null; not automatically synergy.
 
-Use the following terms consistently:
+## Quantitative reporting
 
-- Task1: modality concordance with perturbation_type held fixed.
-- Task2: mechanism concordance between chemical and genetic cohorts within one
-  dataset.
-- anchor_gene: Task2 unit identity.
-- perturbation_gene: perturbation-row identity.
-- query_instance_id: retrieval query identifier.
-- C2G: chemical-to-genetic retrieval.
-- G2C: genetic-to-chemical retrieval.
-- pair_mean_enrichment: ranked pattern summary used in the relevant panels.
-- Gene and Pathway: benchmark-wide representation spaces.
-- FM: representation shown in the scPerturb/K562 Figure 3F local-only panel.
+For every comparison identify:
 
-Define abbreviations on first use in the manuscript text unless the target
-journal specifies a different rule. Keep Task1 and Task2 distinct in headings,
-results prose, and figure references.
+- biological unit and split/matching/null;
+- state representation and response view;
+- metric and direction;
+- denominator/support and exclusions;
+- uncertainty/statistical support where applicable;
+- baseline/reference calibration for prediction.
 
-## Quantitative Reporting
+Do not compare raw distances across unrelated feature spaces as if they shared units.
 
-For every reported comparison:
+## Results organization
 
-- identify the comparison unit and lawful scope;
-- name the metric and its direction;
-- report the relevant denominator or support;
-- include uncertainty or statistical support when the approved analysis
-  supplies it;
-- use the same value and wording across text, tables, and legends;
-- avoid superiority language unless the effect size and statistical support are
-  available and appropriate;
-- do not infer a result from a visualization whose threshold or missingness is
-  not stated.
+Results follow R1-R6 scientific questions rather than representation/model sections:
 
-Use exact field names in Methods and figure legends when they are part of the
-analysis contract. Do not silently translate anchor_gene,
-perturbation_gene, query_instance_id, or pair_mean_enrichment into competing
-identities.
+1. framework;
+2. genetic learnability;
+3. chemical learnability;
+4. cross-intervention conservation;
+5. cross-readout conservation;
+6. combination compositionality.
 
-## Section Requirements
+Representation/model sweeps generally belong in supplementary material unless they change the biological interpretation.
 
-### Title
+## Claim boundaries
 
-The title should identify the benchmark or method, its evaluation object, and
-the relevant field of application without claiming an unsupported advance.
-Exact title wording remains open.
+Do not infer:
 
-### Abstract
+- absolute unpredictability from model failure;
+- causal equivalence from chemical-genetic similarity;
+- direct RNA-to-morphology causality from cross-readout association;
+- biological superiority from a higher embedding score;
+- synergy/epistasis solely from vector non-additivity.
 
-The abstract should state the field context, the unresolved evaluation gap,
-the benchmark design at high level, the two task families, and the bounded
-implication of the evidence. Keep detailed preprocessing, model-family lists,
-and panel-specific thresholds out of the abstract unless required for
-interpretation.
+## Figures and tables
 
-### Introduction
+Every figure/table statement must be traceable to a validated result table and manifest. Legends state the comparison scope, representation, response view, metric, split/matching tier/null, support, and exclusions needed for interpretation.
 
-Build from the field context to the evaluation gap, explain why the gap matters,
-and introduce M2M-Bench as the response. The introduction should not imply that
-Task1 and Task2 answer the same question, and should not present future
-roadmap items as current findings.
+## Style
 
-### Methods
-
-Define the data sources, object model, task units, lawful membership, primary
-analysis families, metrics, aggregation, validation, and evidence roots by
-linking to the authoritative project documents. Keep implementation details
-that do not affect interpretation out of the scientific narrative.
-
-### Results
-
-Organize the results around the benchmark story:
-
-1. benchmark definition and lawful scope;
-2. Task1 modality-concordance evidence;
-3. Task2 mechanism-concordance evidence; and
-4. restricted or exploratory representation evidence where approved.
-
-One paragraph should carry one main finding. Link each finding to the relevant
-figure, table, metric, denominator, and uncertainty. Do not write result
-direction or magnitude before the audited evidence is available.
-
-### Discussion
-
-Explain what the observed benchmark evidence means, why it may arise, and
-where it does not generalize. State limitations tied to data coverage,
-matching, representations, support, and task design when applicable. Future
-work should be tied to a stated limitation or unresolved question in
-docs/roadmap.md.
-
-## Figure And Table Text
-
-Figure legends must be self-contained enough to identify:
-
-- the task or overview role;
-- the displayed scope and direction;
-- the representation and metric;
-- panel-specific thresholds and support fields;
-- relevant exclusions or local-only restrictions; and
-- the evidence or computation boundary needed for interpretation.
-
-The current legends are drafts in docs/manuscript/figure_legends.md. Do not
-promote them to approved text merely because a panel renders.
-
-## Tone And Editing
-
-Use direct, neutral sentences with one substantive claim where possible.
-Prefer verbs such as supports, indicates, suggests, and is associated with
-when stronger language is not justified. Avoid empty intensifiers, sales-like
-phrasing, and unsupported priority claims. Keep terminology, capitalization,
-units, and comparison phrasing consistent across the manuscript.
-
-## Deferred Requirements
-
-Target-journal word limits, section names, reference style, figure dimensions,
-cover-letter language, and submission checklists are intentionally deferred
-until a journal and article type are selected. They must be added as a
-separate approved requirement rather than inferred here.
+Use direct, neutral language. Prefer `supports`, `indicates`, or `is associated with` when causality or universality is not established. Avoid unsupported priority claims and sales-like language.

@@ -1,20 +1,9 @@
-# PerturbLens Research Domain
+# Research Rationale
 
-This domain owns the scientific rationale, literature/ecosystem positioning, and manuscript-level result logic for PerturbLens.
+This domain explains **why** PerturbLens asks its questions. It does not define executable task semantics.
 
-It is intentionally separate from executable contracts:
+- `proposal.md` — full scientific proposal.
+- `landscape.md` — literature ecosystem, nearest competitors, and novelty risks.
+- `result_architecture.md` — manuscript-level scientific progression from R1 to R6.
 
-- `docs/data/` owns data objects, state representations, and response construction;
-- `docs/metrics/` owns metric calculations;
-- `docs/tasks/` owns lawful comparison units, train/test splits, and task-specific inference;
-- `docs/governance/` owns execution state and evidence boundaries.
-
-## Documents
-
-- [proposal.md](proposal.md): complete scientific proposal and study design.
-- [landscape.md](landscape.md): literature landscape, ecological niche, direct competitors, and competitive risks.
-- [result_architecture.md](result_architecture.md): R1-R6 main-result logic and cross-result scientific spine.
-
-## Status Rule
-
-A research document may define the approved scientific question and intended result role, but it does not make a dataset, representation, metric, or task executable. Production execution requires the corresponding domain contract and validation evidence.
+Executable definitions belong in `docs/tasks/`, `docs/data/`, and `docs/metrics/`.

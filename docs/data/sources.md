@@ -1,88 +1,94 @@
-# Data Sources
+# PerturbLens Data Sources
 
-## Role
+## Purpose
 
-This document is the index of data sources used by the current benchmark
-implementation. It records source identity, readout modality, provenance, and
-scope boundaries. Dataset-specific filtering and transformation rules remain
-in the linked preprocessing contracts; this file is not a second preprocessing
-contract.
+This document defines source families and entry requirements. Source presence does not make a comparison lawful; task contracts define lawful matching and splits.
 
-## Current Source Set
+## Current transcriptomic source families
 
-| Source | Raw input surface | Experimental readout | Current Task1 use | Detailed contract |
-| --- | --- | --- | --- | --- |
-| `LINCS` | `/mnt/NAS_21T/ProjectData/OSMOSIS/raw/CMap_LINCS/LINCS_level5/beta/` | Level5 bulk gene-expression signatures | Internal chemical and genetic slices; matched single-gene genetic cross slice | [LINCS preprocessing](preprocessing/lincs.md) |
-| `scPerturb` | `/mnt/NAS_21T/ProjectData/OSMOSIS/raw/scPerturb_Processed/` | Single-cell gene-expression observations with paired `h5ad` and observation tables | Human-only internal chemical and genetic slices; matched single-gene genetic cross slice | [scPerturb preprocessing](preprocessing/scperturb.md) |
+### LINCS
 
-The current Task1 source bundle contains only the source rows that pass the
-active Task1 contracts. The source roots themselves are not benchmark tables;
-the source-local bundles and the final snapshot are derived data surfaces.
+Primary input surface:
 
-## LINCS Inputs
+```text
+/mnt/NAS_21T/ProjectData/OSMOSIS/raw/CMap_LINCS/LINCS_level5/beta/
+```
 
-The current LINCS preprocessing reads the following Level5 inputs:
+Readout: bulk/L1000 Level 5 perturbational expression signatures.
 
-- `level5_beta_all_n1201944x12328.gctx`
-- `siginfo_beta.txt`
-- `cellinfo_beta.txt`
-- `geneinfo_beta.txt`
+Perturbation families used by PerturbLens:
 
-Chemical target resolution uses the ordered mapping cascade documented in the
-[LINCS preprocessing contract](preprocessing/lincs.md). The retained Level5
-signature is the native source-local Gene delta. The preprocessing contract
-also defines the retained `pert_type` families, quality filter, source trace,
-and source-specific audit fields.
+- chemical (`trt_cp`)
+- genetic expression perturbation (`trt_xpr`)
 
-## scPerturb Inputs
+LINCS supplies large-scale chemical and genetic signatures, cell-context metadata, time/dose metadata where available, and chemical target annotations through source mapping resources.
 
-The formal scPerturb ingest surface scans the raw root for:
+### scPerturb-derived human datasets
 
-- `Cleaned_*_obs.csv`
-- paired `Cleaned_<dataset>.h5ad`
+Primary input surface:
 
-Dataset entry is controlled by the active human dataset mapping in the
-[scPerturb preprocessing contract](preprocessing/scperturb.md). That contract
-defines human-only filtering, normalized perturbation types, treated-control
-pairing, local-context matching, source-specific identity extraction, the
-`sciplex4` exception, and the FM handoff.
+```text
+/mnt/NAS_21T/ProjectData/OSMOSIS/raw/scPerturb_Processed/
+```
 
-## Data Layers
+Readout: single-cell transcriptomic perturbation observations with dataset-specific controls and metadata.
 
-The benchmark keeps three distinct data layers:
+Perturbation families include CRISPR/CRISPRi/CRISPRa-like genetic interventions and drug perturbations. Exact intervention mode is preserved rather than discarded after family normalization.
 
-1. Raw source files are immutable inputs under the source roots above.
-2. Source-local bundles preserve source-specific feature axes, registries,
-   pairing facts, and model-specific outputs where applicable.
-3. The Task1 snapshot combines lawful source-local objects into canonical
-   `master/` and block-scoped surfaces.
+## Morphology source class
 
-The snapshot layout, routing fields, manifest structure, and registry ownership
-are defined in the [Task1 snapshot contract](snapshots/task1.md). The object
-identity and delta-space terminology are defined in the
-[data object model](object_model.md).
+R5 requires perturbational morphology data with sufficient matching to transcriptomic perturbations. Candidate sources must be frozen in a source-inventory decision before production analysis.
 
-## Provenance And Storage
+Required source metadata include, where applicable:
 
-The local checkout is source-only. Raw inputs, source bundles, snapshots, run
-metadata, and plot exports remain on the NAS-backed roots defined by the
-[storage policy](../governance/storage_policy.md) and [runbook](../governance/runbook.md).
+- perturbation/compound identity;
+- target annotation;
+- genetic intervention identity and mode;
+- cellular context;
+- plate/well/batch;
+- time and dose;
+- replicate identity;
+- image channels and acquisition metadata;
+- relationship to any transcriptomic assay.
 
-Each source-local bundle and Task1 snapshot carries a manifest with source
-paths, upstream inputs, contract parameters, and artifact paths. Manifest
-requirements are part of the [Task1 snapshot contract](snapshots/task1.md);
-audited manifests and stage outputs are authoritative for materialized data
-facts.
+Three matching tiers are recognized:
 
-## Scope Boundaries
+1. **same-assay paired** — morphology and transcriptomics measured from the same experimental system with direct pairing;
+2. **condition-matched** — same perturbation/context/time/dose in independent readout experiments;
+3. **label-matched** — same perturbation or target annotation without full experimental matching.
 
-- `scPerturb` human-only filtering and the absence of ortholog mapping are
-  current Task1 source-bundle rules, not universal assumptions about every
-  possible future source.
-- The current Task1 source bundle supports `Gene`, `Pathway`, and scoped FM
-  surfaces as specified by the linked contracts.
-- No Task2 snapshot contract is created here. Task2 data definitions remain in
-  [Task2](../tasks/task2.md) until a dedicated Task2 data snapshot is defined.
-- Adding a source, species, assay, or representation requires a documented
-  scope decision and corresponding contract update; source presence alone does
-  not expand a task's lawful comparison set.
+R5 claims must state the tier used.
+
+## Combination source class
+
+R6 requires explicit multi-perturbation observations with constituent single perturbations and matched controls in the same or a sufficiently compatible experimental system.
+
+Required fields:
+
+- constituent identities;
+- combination order/stoichiometry if meaningful;
+- intervention type;
+- context;
+- time/dose or perturbation strength;
+- matched single-perturbation availability;
+- control and replicate identifiers.
+
+Genetic and chemical combinations are analyzed separately unless a specific cross-intervention combination comparison is approved.
+
+## Source inventory gate
+
+Before any R2-R6 production run, materialize a source inventory recording:
+
+- source version/path/hash;
+- organism and assay;
+- readout modality;
+- intervention types/modes;
+- contexts;
+- perturbation/compound/target counts;
+- replicate support;
+- time/dose coverage;
+- combination coverage;
+- representation availability;
+- exclusion reasons.
+
+The inventory is descriptive evidence, not proof that a downstream task is sufficiently powered.

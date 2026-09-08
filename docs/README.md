@@ -1,33 +1,28 @@
 # PerturbLens Documentation
 
-## Start Here
+## Start here
 
-1. Read [the project definition](project.md) for the active scientific question and scope.
-2. Read [the research proposal](research/proposal.md) for the full study rationale and design.
-3. Read [the literature landscape](research/landscape.md) for ecological positioning and direct competitors.
-4. Read [the result architecture](research/result_architecture.md) for the R1-R6 manuscript logic.
-5. Read [the task/result migration map](tasks/study_map.md) before reusing legacy Task1/Task2 outputs.
-6. Read [the roadmap](roadmap.md) for migration and execution order.
-7. Read [project state](governance/state.md) for what is approved, implemented, and verified.
+1. [Project definition](project.md) — active scientific question and scope.
+2. [Research proposal](research/proposal.md) — scientific rationale and full study design.
+3. [Competitive landscape](research/landscape.md) — literature position and novelty risks.
+4. [Result architecture](research/result_architecture.md) — R1-R6 argument flow.
+5. [Project state](governance/state.md) — what is designed, implemented, and verified.
+6. [Roadmap](roadmap.md) — execution order and entry conditions.
 
-## Domain Owners
+## Domain owners
 
 | Domain | Canonical entry points |
 | --- | --- |
-| Research rationale and positioning | [Research index](research/README.md), [proposal](research/proposal.md), [landscape](research/landscape.md), [result architecture](research/result_architecture.md) |
-| Tasks and analysis | [Study map](tasks/study_map.md), retained [Task1](tasks/task1.md), retained [Task2](tasks/task2.md), [output schemas](tasks/output_schemas.md), [validation](tasks/validation.md), [evidence index](tasks/evidence_index.md) |
-| Data | [Sources](data/sources.md), [object model](data/object_model.md), [response construction](data/response_construction.md), source preprocessing contracts |
-| Representations | [Gene](data/representations/gene.md), [Pathway](data/representations/pathway.md), [FM](data/representations/fm.md); morphology representation contract is an implementation milestone before R5 production |
-| Metrics | [Concordance](metrics/concordance.md), [retrieval](metrics/retrieval.md), [prediction](metrics/prediction.md), [aggregation](metrics/aggregation.md) |
-| Visualization | [Standards](visualization/standards.md), [figure plan](visualization/figure_plan.md) |
-| Manuscript | [Writing standards](manuscript/writing_standards.md), [outline](manuscript/outline.md), [figure legends](manuscript/figure_legends.md) |
-| Governance | [Scientific standards](governance/scientific_standards.md), [documentation policy](governance/documentation_policy.md), [runbook](governance/runbook.md), [storage policy](governance/storage_policy.md), [state](governance/state.md) |
-| History | [Changelog](history/CHANGELOG.md), [PerturbLens reframing decision](history/decisions/2026-09-08_perturblens_reframing.md) |
+| Research rationale | [Proposal](research/proposal.md), [landscape](research/landscape.md), [result architecture](research/result_architecture.md) |
+| Tasks | [Genetic](tasks/genetic_learnability.md), [chemical](tasks/chemical_learnability.md), [cross-intervention](tasks/cross_intervention.md), [cross-readout](tasks/cross_readout.md), [combination](tasks/combination.md), [schemas](tasks/output_schemas.md), [validation](tasks/validation.md), [evidence](tasks/evidence_index.md) |
+| Data | [Sources](data/sources.md), [object model](data/object_model.md), [response construction](data/response_construction.md), [preprocessing](data/preprocessing/), [representations](data/representations/) |
+| Metrics | [Population similarity](metrics/population_similarity.md), [retrieval](metrics/retrieval.md), [prediction](metrics/prediction.md), [aggregation](metrics/aggregation.md) |
+| Visualization | [Figure plan](visualization/figure_plan.md), [standards](visualization/standards.md) |
+| Manuscript | [Outline](manuscript/outline.md), [writing standards](manuscript/writing_standards.md), [figure legends](manuscript/figure_legends.md) |
+| Governance | [State](governance/state.md), [runbook](governance/runbook.md), [storage](governance/storage_policy.md), [scientific standards](governance/scientific_standards.md), [documentation policy](governance/documentation_policy.md), [collaboration](governance/collaboration.md) |
 
-## Architecture Boundary
+## Ownership rule
 
-`docs/research/` owns scientific rationale, literature/ecosystem positioning, and manuscript-level research questions. It does **not** define executable metric formulas or lawful task units.
+A definition has one owner. Data transformations belong in data contracts; comparison units and splits belong in task contracts; calculations belong in metric contracts; scientific motivation belongs in research; figure placement belongs in visualization/manuscript.
 
-Executable semantics remain owned by `docs/tasks/`, `docs/data/`, and `docs/metrics/`. Existing M2M Task1/Task2 contracts remain valid for their historical outputs until a PerturbLens task contract explicitly supersedes or incorporates them.
-
-The root still contains only this navigation page, `project.md`, and `roadmap.md`. Data and run artifacts remain outside the source checkout.
+The repository contains only the current PerturbLens architecture. Prior project structure remains recoverable through Git history rather than active documentation.

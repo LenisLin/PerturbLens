@@ -1,74 +1,59 @@
 # PerturbLens Agent Guide
 
-Start with `docs/README.md`, `docs/project.md`, and `docs/research/result_architecture.md`. They define the active scientific framing, documentation ownership, and the staged relationship between the new PerturbLens study and the retained M2M execution core.
+Start with `docs/README.md`, `docs/project.md`, and `docs/governance/state.md`.
 
-## Always-Active Repo Rules
+## Source hierarchy
 
-### Source Hierarchy
+When project documents or outputs disagree, use this order:
 
-When repo documents disagree, use this order:
+1. audited manifests, result tables, and validation assertions;
+2. active contracts in `docs/tasks/`, `docs/data/`, and `docs/metrics/`;
+3. `docs/governance/`;
+4. scientific rationale in `docs/research/`;
+5. manuscript and visualization plans.
 
-1. Audited manifests and stage outputs for claims about what a run actually produced.
-2. Active contracts in `docs/tasks/`, `docs/data/`, and `docs/metrics/` for executable semantics.
-3. `docs/project.md` and `docs/governance/*.md` for approved project scope and execution state.
-4. `docs/research/` for scientific rationale, literature positioning, and main-result architecture.
-5. `docs/manuscript/` and `docs/visualization/` for presentation.
+A proposal is not execution evidence. A path is not proof that a run completed.
 
-The roadmap proposes future work. History preserves earlier decisions. Neither supersedes an active executable contract.
+## Scientific architecture
 
-### Scientific Framing
+PerturbLens separates four layers:
 
-PerturbLens is a response-centric characterization study, not primarily a model leaderboard. The central object is the perturbation response represented under explicit state and response spaces.
+1. **Data** — perturbation observations and matched controls.
+2. **State representation** — Gene/Pathway/FM or CellProfiler/deep morphology features.
+3. **Response construction** — control Delta or Systema-style perturbation-specific response.
+4. **Biological relation/evaluation** — population similarity, retrieval, and prediction under a declared split or boundary.
 
-The primary study axes are:
+Do not collapse these layers into one generic “metric”.
 
-- state representation: Gene, Pathway, transcriptomic FM, CellProfiler morphology, deep morphology embedding;
-- response construction: control delta and Systema-style perturbation-specific reference;
-- evaluation: population similarity, instance retrieval, model prediction;
-- biological boundaries: within, cellular context, target/compound, intervention modality, readout modality, combination.
+## Main result contracts
 
-Main Results are organized as R1 framework, R2 genetic learnability, R3 chemical learnability, R4 chemical-genetic conservation, R5 transcriptomic-morphological conservation, and R6 combination compositionality.
+- R2: `docs/tasks/genetic_learnability.md`
+- R3: `docs/tasks/chemical_learnability.md`
+- R4: `docs/tasks/cross_intervention.md`
+- R5: `docs/tasks/cross_readout.md`
+- R6: `docs/tasks/combination.md`
 
-### Legacy M2M Boundary
+R1 is the project/framework definition and does not require a separate prediction task.
 
-Existing Task1/Task2 contracts and their NAS-backed outputs are retained during migration. Do not silently reinterpret an old `task1_*` or `task2_*` table as evidence for a new PerturbLens result. Use `docs/tasks/study_map.md` for the mapping and create a new or revised task contract before production execution of new semantics.
+## Evidence discipline
 
-Current M2M implementation names, package paths, and NAS roots may remain during migration for provenance. Renaming source code or storage roots is a separate change and must preserve historical traceability.
+Every non-trivial scientific statement must be traceable to a source manifest, response build, split manifest, metric/model run, result table, and validation assertion. Preserve representation, response view, split, context, target/compound identity, readout modality, denominators, and exclusions.
 
-### Minimum Grounding Before Changes
+## Active storage
 
-Read the smallest relevant subset of:
+Use only the roots in `docs/governance/storage_policy.md`. The repository checkout is source-only.
 
-- `docs/README.md`, `docs/project.md`, and `docs/research/result_architecture.md`;
-- `docs/governance/state.md` and `docs/governance/runbook.md`;
-- `docs/governance/documentation_policy.md`;
-- `docs/data/object_model.md` and `docs/data/response_construction.md` when touching response objects;
-- relevant representation contracts under `docs/data/representations/`;
-- `docs/tasks/study_map.md` plus the relevant task contract;
-- relevant metric contracts under `docs/metrics/`;
-- `docs/manuscript/outline.md` and `docs/visualization/figure_plan.md` for manuscript or figure changes.
+## Change discipline
 
-### Evidence And Storage Discipline
+- Update the owning contract before changing units, splits, response semantics, metric formulas, or figure claims.
+- Treat time/dose as chemical explanatory covariates unless an explicitly matched dynamic task is approved.
+- Do not claim causal equivalence from chemical-genetic similarity.
+- Do not claim direct molecular-to-morphological causality from cross-readout association.
+- Do not call a combination residual “synergy” without a phenotype-appropriate interaction definition.
+- State representation comparison is a lens on response information, not a leaderboard by default.
 
-- Treat the checkout as source-only.
-- Historical M2M NAS roots remain authoritative for existing runs until a migration decision creates new roots.
-- Every result claim must point to a concrete manifest/table/assertion chain.
-- Candidate morphology, cross-modal, prediction, expanded-FM, and combination analyses are not completed merely because they appear in the proposal.
+## Repo skills
 
-### Change Discipline
-
-- Update the controlling domain contract before changing analysis semantics.
-- Keep project framing in `docs/project.md`, research rationale in `docs/research/`, future execution in `docs/roadmap.md`, observed status in `docs/governance/state.md`, and rationale in `docs/history/`.
-- Keep representation, response-construction, metric, task, and figure responsibilities separate.
-- Do not create an exhaustive representation-by-metric-by-task factorial benchmark unless a scientific question requires it.
-- Preserve null, negative, and uncertain outcomes as valid completion states.
-
-## Repo-Scoped Skills
-
-Legacy repo-scoped skills remain available during migration:
-
-- `.agents/skills/m2m-contract-grounding/SKILL.md`
-- `.agents/skills/m2m-evidence-trace/SKILL.md`
-- `.agents/skills/m2m-migration-runbook/SKILL.md`
-
-Their names are retained for compatibility; use the active PerturbLens documents above as the scientific source of truth.
+- `.agents/skills/perturblens-grounding/SKILL.md`
+- `.agents/skills/perturblens-evidence/SKILL.md`
+- `.agents/skills/perturblens-execution/SKILL.md`

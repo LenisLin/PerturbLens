@@ -1,59 +1,42 @@
 name: perturblens
 title: PerturbLens
-repository_legacy_name: M2M-Bench
-package_legacy_name: m2mbench
-one_liner: Response-centric characterization of what cellular perturbation information is reproducible, transferable, cross-modal, and compositional.
-domain: Computational biology study of cellular perturbation-response structure and predictability
-stage: Scientific reframing approved; legacy M2M execution core retained during staged migration. See docs/governance/state.md.
-owner: unknown
+one_liner: Response-centric characterization of cellular perturbation information across context, target, intervention, readout, and combination boundaries.
+domain: Computational biology; perturbation response characterization and virtual-cell evaluation
+stage: See docs/governance/state.md
+owner: LenisLin
 license: unknown
-scientific_axes:
-  state_representation:
-    transcriptomics:
-      - Gene
-      - Pathway
-      - FM
-    morphology:
-      - CellProfiler
-      - deep_embedding
-  response_construction:
-    - control_delta
-    - systema_reference
-  evaluation:
-    - population_similarity
-    - instance_retrieval
-    - model_prediction
-  biological_boundaries:
-    - within
-    - cellular_context
-    - target_or_compound
-    - intervention_modality
-    - readout_modality
-    - composition
-main_results:
-  - R1_framework
-  - R2_genetic_learnability
-  - R3_chemical_learnability
-  - R4_cross_intervention
-  - R5_cross_readout
-  - R6_combination
-current_datasets:
-  - LINCS
-  - scPerturb
-planned_data_families:
-  - matched_transcriptomics_morphology
-  - genetic_combinations
-  - chemical_combinations
 entrypoints:
   - python -m pip install -e ".[dev]"
-  - legacy M2M run interfaces remain documented in docs/governance/runbook.md during migration
+primary_sources:
+  - LINCS transcriptomics
+  - scPerturb transcriptomics
+planned_source_classes:
+  - matched perturbational morphology / Cell Painting
+  - genetic and chemical combination datasets
+state_representations:
+  transcriptomics:
+    - Gene
+    - Pathway
+    - FM
+  morphology:
+    - CellProfiler
+    - DeepMorphology
+response_views:
+  - Delta
+  - SystemaResidual
+evaluation_families:
+  - population_similarity
+  - instance_retrieval
+  - model_prediction
+results:
+  - r1_framework
+  - r2_genetic
+  - r3_chemical
+  - r4_cross_intervention
+  - r5_cross_readout
+  - r6_combination
 components:
   - docs/
-  - docs/research/
-  - docs/tasks/
-  - docs/data/
-  - docs/metrics/
-  - docs/governance/
-  - scripts/
   - scripts/fm_extractors/
-  - src/m2mbench/
+  - src/perturblens/
+  - tests/
