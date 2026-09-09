@@ -1,5 +1,9 @@
 # PerturbLens Validation Requirements
 
+This contract owns task-result acceptance. The [data workflow](../data/workflow.md)
+owns input/build gates; the [evidence index](../governance/evidence_index.md) owns
+registration of validated results. Passing one layer does not certify the others.
+
 ## Universal gates
 
 ### 1. Input integrity

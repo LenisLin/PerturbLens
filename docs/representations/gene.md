@@ -12,7 +12,7 @@ Primary analyses should use a common-support feature set when directly comparing
 
 ## State and response
 
-Gene state surfaces are source-specific expression/signature vectors aligned to the frozen feature index. Delta and SystemaResidual response vectors are built downstream by `docs/data/response_construction.md`.
+Gene state surfaces are source-specific expression/signature vectors aligned to the frozen feature index. Delta and SystemaResidual response vectors are built downstream by `docs/responses/construction.md`.
 
 ## Interpretation
 

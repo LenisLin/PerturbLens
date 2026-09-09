@@ -4,6 +4,13 @@ Version: `perturblens-data-v1`. This workflow specifies required behavior and
 acceptance gates; it is not a claim that the corresponding automation exists.
 No data operations are authorized merely by publishing this document.
 
+This workflow owns intake/build ordering and observable handoff gates.
+[Representation contracts](../representations/README.md) own feature construction;
+[response contracts](../responses/README.md) own reference-based transformations.
+The [runbook](../governance/runbook.md) owns scientific run execution and evidence
+registration after lawful inputs are available. Shared IDs and artifact schemas
+remain in the data module.
+
 ## Lifecycle and ordering
 
 ```text
@@ -91,9 +98,10 @@ do not reuse globally fitted values for a strict held-out claim by relabeling.
 1. Preserve images and acquisition index, treated/control metadata, channel and
    plate/well/field identity. Resolve availability separately for precomputed
    profiles, images and any existing embeddings.
-2. Validate source-specific imaging/segmentation/QC rules under the
-   [morphology contract](preprocessing/morphology.md). Record failed wells/cells,
-   finite/invariant features and the control-anchored normalization specification.
+2. Validate image/metadata preparation under the
+   [morphology preprocessing contract](preprocessing/morphology.md), then apply
+   segmentation, feature QC and normalization under the
+   [morphology state contract](../representations/morphology.md).
 3. Adopt a traceable external CellProfiler profile build or execute a versioned
    pipeline after authorization; retain cell/well aggregation and raw versus
    normalized feature semantics. Avoid recomputation solely for directory naming.

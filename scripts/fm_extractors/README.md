@@ -3,7 +3,7 @@
 ## Interface status
 
 The registered extractor families are defined in
-[the FM contract](../../docs/data/representations/fm.md). Model-specific state
+[the FM contract](../../docs/representations/fm.md). Model-specific state
 extraction routines are retained for reuse, including unpublished local worker
 improvements where present.
 

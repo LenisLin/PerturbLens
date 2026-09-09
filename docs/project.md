@@ -59,6 +59,12 @@ Every major biological relation is studied through three complementary evidence 
 
 ## Main Results
 
+The documentation follows these layers through [data](data/README.md),
+[state representations](representations/README.md),
+[response construction](responses/README.md), and [scientific tasks](tasks/README.md).
+Tasks define lawful comparisons; metric contracts define calculations. The
+[roadmap](roadmap.md) orders execution without duplicating these shared contracts.
+
 ### R1 — Framework
 
 Defines data, state representations, response construction, metrics, comparison axes, and coverage. R1 does not use model ranking as a biological conclusion.

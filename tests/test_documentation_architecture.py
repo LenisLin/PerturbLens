@@ -10,6 +10,8 @@ DOMAINS = {
     "research",
     "tasks",
     "data",
+    "representations",
+    "responses",
     "metrics",
     "visualization",
     "manuscript",
@@ -21,10 +23,11 @@ def active_documents() -> list[Path]:
     documents = list(DOCS_ROOT.rglob("*.md"))
     documents.extend([REPO_ROOT / "README.md", REPO_ROOT / "AGENTS.md", REPO_ROOT / "project.yaml"])
     documents.extend((REPO_ROOT / ".agents" / "skills").rglob("SKILL.md"))
+    documents.append(REPO_ROOT / "scripts" / "fm_extractors" / "README.md")
     return sorted(documents)
 
 
-def test_documentation_root_has_three_entries_and_seven_domains() -> None:
+def test_documentation_root_has_three_entries_and_nine_domains() -> None:
     assert {document.name for document in DOCS_ROOT.glob("*.md")} == {
         "README.md",
         "project.md",
@@ -49,6 +52,23 @@ def test_no_active_legacy_project_contracts() -> None:
         if stale_pattern.search(document.read_text(encoding="utf-8"))
     ]
     assert not stale, f"Legacy active references remain in: {stale}"
+
+
+def test_module_contracts_have_single_locations() -> None:
+    moved_contracts = {
+        **{
+            f"data/representations/{family}.md": f"representations/{family}.md"
+            for family in ["gene", "pathway", "fm", "morphology"]
+        },
+        "data/response_construction.md": "responses/construction.md",
+        "tasks/evidence_index.md": "governance/evidence_index.md",
+        "data/local_preservation.md": "governance/records/2026-09-09-local-preservation.md",
+    }
+    for previous, current in moved_contracts.items():
+        assert not (DOCS_ROOT / previous).exists()
+        assert (DOCS_ROOT / current).is_file()
+    for module in ["representations", "responses", "tasks", "governance/records"]:
+        assert (DOCS_ROOT / module / "README.md").is_file()
 
 
 def test_local_markdown_links_resolve() -> None:
@@ -77,6 +97,6 @@ def test_code_formatted_documentation_paths_resolve() -> None:
 
 
 def test_primary_fm_families_are_registered() -> None:
-    contract = (DOCS_ROOT / "data" / "representations" / "fm.md").read_text(encoding="utf-8")
+    contract = (DOCS_ROOT / "representations" / "fm.md").read_text(encoding="utf-8")
     for family in ["scgpt", "geneformer", "scbert", "scfoundation", "uce", "state", "tahoe-x1"]:
         assert f"`{family}`" in contract

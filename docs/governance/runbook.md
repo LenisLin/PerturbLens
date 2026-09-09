@@ -1,5 +1,11 @@
 # PerturbLens Runbook
 
+The [data workflow](../data/workflow.md) owns intake, preparation and build gates.
+This runbook owns scientific run isolation, manifests, execution and result
+handoff. Register validated result evidence under the
+[evidence index](evidence_index.md); a completed preservation operation is not a
+completed scientific run.
+
 ## Run families
 
 | Run family | Purpose |

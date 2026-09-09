@@ -21,36 +21,16 @@ availability. Full extraction is not an intake operation.
 - replicate/batch fields;
 - time/dose where available.
 
-## Segmentation and CellProfiler surface
+## Prepared assets and state handoff
 
-The primary interpretable morphology representation is built with a versioned CellProfiler pipeline. The output retains cell-level features spanning, as available:
+Prepared assets retain image locations, acquisition metadata, condition and
+experimental-unit identity, and QC/exclusion records. Precomputed profiles and
+embeddings retain their source provenance and require explicit adoption checks.
 
-- size/area/diameter and shape;
-- intensity;
-- texture;
-- granularity;
-- spatial relationships;
-- nucleus/cytoplasm/organelle feature families.
-
-Feature extraction metadata include CellProfiler version, pipeline file hash, segmentation object definitions, image channels, and failed-well/cell QC.
-
-## Feature QC
-
-Before response construction:
-
-- remove non-finite and invariant features;
-- record missingness;
-- identify extreme technical artifacts;
-- use plate/batch-aware normalization anchored to controls when justified;
-- avoid feature selection using downstream target labels.
-
-The exact normalization is versioned and stored in the state-build manifest.
-
-## Deep morphology surface
-
-A fixed image encoder may produce `DeepMorphology:<model>` embeddings. The build records model/checkpoint identity, input channels, image/cell crop definition, aggregation rule, and embedding dimensionality.
-
-The encoder must not be trained on the exact downstream positive relation and then evaluated on that same relation without a disjoint split.
+[Morphology representations](../../representations/morphology.md) owns
+segmentation/feature extraction, feature QC and normalization, and deep-encoder
+construction. These state-build operations follow intake and prepared processing;
+their availability is not established by an image or profile inventory alone.
 
 ## Matching tier
 
@@ -62,14 +42,12 @@ condition label. Cross-readout claims preserve the selected links and tiers.
 ## Outputs
 
 - condition registry;
-- cell/well profile registry;
-- CellProfiler feature matrix and index;
-- deep-embedding matrix and index when requested;
+- image/acquisition registry and cell-image-well membership where available;
 - QC/exclusion table;
-- state-build manifest.
+- prepared-build manifest.
 
 Keep prepared image/metadata/QC assets separate from CellProfiler and
 DeepMorphology state builds. Their row/feature indices and cell-image-well
-membership follow the matrix contract. Plate/control normalization records its
-fit scope and exact allowed units; field/cell counts do not replace independent
-well/biological-replicate support.
+membership follow the matrix contract. Field/cell counts do not replace
+independent well/biological-replicate support. State outputs and their manifests
+are defined by the morphology representation contract.

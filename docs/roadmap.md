@@ -2,6 +2,28 @@
 
 The roadmap expresses dependency order. Completion is recorded only in `docs/governance/state.md` and evidence manifests.
 
+## Preparation versus production
+
+Source discovery, metadata coverage audits and matching feasibility assessments
+for morphology and combinations can begin during framework closure. They do not
+authorize R5/R6 production analyses or waive their source and task freezes.
+Scientific dependencies below govern claims and analysis entry, not a requirement
+to postpone all downstream data preparation until preceding results are complete.
+
+| Stage | Canonical implementation contracts | Entry or handoff |
+| --- | --- | --- |
+| Framework | [Data workflow](data/workflow.md), [representations](representations/README.md), [responses](responses/README.md), [validation](tasks/validation.md) | Frozen shared definitions and executable gates before production |
+| R2/R3 | [Genetic](tasks/genetic_learnability.md), [chemical](tasks/chemical_learnability.md) | Eligible sources, lawful splits, declared models and references |
+| R4 | [Cross-intervention](tasks/cross_intervention.md) | Matched cohort and internal-support evidence |
+| R5 | [Cross-readout](tasks/cross_readout.md) | Frozen morphology sources, state builds and matching tiers |
+| R6 | [Combination](tasks/combination.md) | Eligible combinations, constituent support and declared nulls |
+| Synthesis | [Evidence index](governance/evidence_index.md), [figure plan](visualization/figure_plan.md) | Validated result tables with preserved boundaries and denominators |
+
+Organoid source preparation follows the existing
+[workflow extension](data/workflow.md#organoid-extension). Organoid is a culture
+model/context rather than a readout modality; these requirements do not freeze a
+specific organoid source, split or new result family.
+
 ## Phase 1 — Framework closure
 
 Freeze before production analysis:

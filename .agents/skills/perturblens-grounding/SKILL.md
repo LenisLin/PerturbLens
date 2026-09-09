@@ -10,7 +10,7 @@ Use this skill before changing scientific scope, task semantics, data objects, r
 1. Read `docs/project.md` and `docs/governance/state.md`.
 2. Read the relevant research rationale under `docs/research/`.
 3. Read the owning task contract under `docs/tasks/`.
-4. Read the data and representation contracts under `docs/data/`.
+4. Read the data contracts under `docs/data/`, state contracts under `docs/representations/`, and response contracts under `docs/responses/`.
 5. Read the relevant metric contracts under `docs/metrics/`.
 6. If a proposed change alters comparison units, split semantics, response references, metric definitions, or claim boundaries, update the owning contract before implementation.
 7. Do not infer completed evidence from a planned task, path, figure, or proposal.

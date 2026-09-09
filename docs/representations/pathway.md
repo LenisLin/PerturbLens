@@ -16,6 +16,11 @@ Each pathway build records:
 - score/aggregation method;
 - feature order.
 
+The build declares whether its input is a state or an already constructed
+response. A score aggregated from a response remains a response-space projection,
+not a newly observed state. [Response construction](../responses/construction.md)
+owns reference semantics; this contract owns the pathway aggregation rule.
+
 ## Scientific role
 
 Pathway is a lower-resolution biological lens. It tests whether response information that is unstable at individual genes remains conserved at the level of broad biological programs.

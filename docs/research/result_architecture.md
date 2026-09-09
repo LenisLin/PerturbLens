@@ -4,6 +4,10 @@
 
 The manuscript is organized by biological boundaries, not by representation or metric.
 
+The [task index](../tasks/README.md) maps R2-R6 to their executable contracts.
+This document owns argument and figure responsibilities, not a second copy of
+split, matching, response or metric definitions.
+
 ```text
 R1: What do we measure?
   -> R2/R3: What is learnable within intervention classes?

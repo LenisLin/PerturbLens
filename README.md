@@ -61,7 +61,9 @@ python -m pip install -e ".[dev]"
 
 - `docs/research/`: scientific rationale, proposal, and competitive landscape
 - `docs/tasks/`: executable comparison contracts
-- `docs/data/`: source, state-representation, and response-construction contracts
+- `docs/data/`: intake, source metadata, preprocessing, shared schemas, and data storage
+- `docs/representations/`: Gene, Pathway, FM, and morphology state contracts
+- `docs/responses/`: Delta/SystemaResidual construction and reference scopes
 - `docs/metrics/`: population similarity, retrieval, prediction, and aggregation
 - `docs/visualization/`: figure architecture and visual standards
 - `docs/manuscript/`: manuscript argument and writing standards

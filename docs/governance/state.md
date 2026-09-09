@@ -1,6 +1,6 @@
 # PerturbLens Project State
 
-Last updated: 2026-09-08
+Last updated: 2026-09-09
 
 ## Active scientific architecture
 
@@ -86,6 +86,34 @@ A subsequent read-only local inventory found that the NAS project root now exist
 and contains historical `data/task1`, `runs`, `_staging` and `old` content. This
 supersedes the earlier root-absence observation, not its historical record. No
 data was moved, deleted or promoted to current evidence by this contract update.
+
+## Local input preservation — 2026-09-09
+
+The [local preservation record](records/2026-09-09-local-preservation.md) documents
+483 file-level moves and three provenance-script copies into `data/`, totaling
+222,679,964,078 bytes. Retained assets include LINCS source levels/annotations,
+41 human scPerturb H5ADs, 29 historical cleaned input bundles, legacy K562 state
+assets and compact run provenance. Ten existing `_staging/` symlinks were updated.
+Destination format/shape checks cover 110 H5AD/GCTX/NPY files. The catalog snapshot
+`relocate_inputs_20260909` preserves the earlier CPG0016 registration.
+
+These are preservation artifacts, not new R2-R6 results or validated canonical
+prep/state builds. A subsequent read-only check on 2026-09-09 found all 1,225
+cleanup-list files absent. This verifies their absence, not the identity or full
+execution log of the deleting process. The assistant then removed only empty
+directories: the historical `old/` and `runs/` trees are absent. All 27 retained
+mouse/protein files remain present with their recorded sizes; hidden
+administrative directories in `OSMOSIS/raw/` were retained. The preservation
+record distinguishes the initial blocked cleanup attempt from these later facts.
+
+## Documentation module alignment — 2026-09-09
+
+State representation and response contracts now have independent modules under
+`docs/representations/` and `docs/responses/`. Data retains shared schemas,
+artifact identity and NAS layout ownership. Evidence registration and dated
+maintenance records belong to governance. The roadmap distinguishes early
+source preparation from production analysis entry. This is documentation
+reorganization, not a new method implementation, NAS migration or R2-R6 result.
 
 ## Evidence boundary
 

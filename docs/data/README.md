@@ -25,16 +25,26 @@ are supporting data infrastructure, not additional main results.
 | Common artifact envelope | [Manifests](manifests.md) | Lineage, fit scope, status, integrity and registration |
 | Logical matrices | [Matrix semantics](matrix_semantics.md) | Row/feature alignment, values, storage formats and transformations |
 | Shared biological relations | [Relations](relations.md) | R4/R5 links, combination membership and matching evidence |
-| Response construction | [Responses](response_construction.md) | Delta/Systema references, scope and reuse |
 | End-to-end processing | [Workflow](workflow.md) | Stage order, authorization boundaries and acceptance checks |
 | Source-specific processing | [Sources](sources.md), [preprocessing](preprocessing/) | LINCS, scPerturb and morphology adaptations |
-| State representations | [Representations](representations/) | Gene, Pathway, FM, CellProfiler and DeepMorphology |
+
+[State representations](../representations/README.md) owns feature construction;
+[response construction](../responses/construction.md) owns Delta/Systema
+references and reuse. Data retains shared object identities, manifests, matrix
+descriptors and the physical storage layout for both artifact types.
 
 The [storage policy](../governance/storage_policy.md) owns allowed roots. Task
 contracts own scientific matching, split rules and permitted model inputs; data
 contracts persist those rules and their evidence rather than replace them.
 The [runbook](../governance/runbook.md), [result schemas](../tasks/output_schemas.md)
 and [validation contract](../tasks/validation.md) continue to apply.
+
+## Related operational records
+
+The [2026-09-09 preservation record](../governance/records/2026-09-09-local-preservation.md)
+documents verified relocation paths, retained assets and subsequent cleanup
+observations. It is an operation record, not an additional data contract or a
+scientific source-admission decision.
 
 ## Frozen boundaries
 

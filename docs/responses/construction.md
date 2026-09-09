@@ -50,8 +50,8 @@ Every response object references a persisted registry containing:
 
 ## Scope and reusable response bundles
 
-Response bundles follow the [data architecture](architecture.md) and
-[common manifest](manifests.md). Required additional manifest fields are
+Response bundles follow the [data architecture](../data/architecture.md) and
+[common manifest](../data/manifests.md). Required additional manifest fields are
 `response_build_id`, `response_view`, `response_scope`, `task_name`, `split_id`,
 `reference_spec_id`, state artifact IDs, relation artifact IDs where applicable,
 and the exact aggregation/weighting rule.
@@ -94,13 +94,13 @@ members or counts. Only tasks accepting that source contract may use them.
 `response_index.parquet` extends the logical matrix index with `response_id`,
 `condition_id`, `reference_id`, representation and response-view identity,
 condition/reference counts and validity/exclusion status. Feature axes follow
-the [matrix contract](matrix_semantics.md). Row-specific exclusions remain
+the [matrix contract](../data/matrix_semantics.md). Row-specific exclusions remain
 auditable; an excluded response does not receive a fabricated zero vector.
 
 For split-specific operations, freeze membership from condition/entity metadata
 before building fitted states or references. The lifecycle diagram is a logical
 dependency map, not permission to build all responses before split definition;
-see the [workflow](workflow.md).
+see the [workflow](../data/workflow.md).
 
 ## Morphology variants
 

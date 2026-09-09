@@ -7,6 +7,8 @@ description: Trace PerturbLens scientific claims through source, response, split
 
 Use this skill when reporting or validating scientific results.
 
+Use `docs/governance/evidence_index.md` for the evidence entry contract.
+
 The minimum evidence chain is:
 
 ```text

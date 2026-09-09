@@ -7,7 +7,7 @@ Start with `docs/README.md`, `docs/project.md`, and `docs/governance/state.md`.
 When project documents or outputs disagree, use this order:
 
 1. audited manifests, result tables, and validation assertions;
-2. active contracts in `docs/tasks/`, `docs/data/`, and `docs/metrics/`;
+2. active contracts in `docs/data/`, `docs/representations/`, `docs/responses/`, `docs/tasks/`, and `docs/metrics/`;
 3. `docs/governance/`;
 4. scientific rationale in `docs/research/`;
 5. manuscript and visualization plans.

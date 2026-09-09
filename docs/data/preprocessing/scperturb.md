@@ -7,13 +7,20 @@ files separately from canonical prepared outputs.
 
 ## Inputs
 
-Primary source root:
+Source-native human expression inputs:
 
 ```text
-/mnt/NAS_21T/ProjectData/OSMOSIS/raw/scPerturb_Processed/
+/mnt/NAS_21T/ProjectData/PerturbLens/data/sources/scperturb/local_snapshot_20260909/transcriptomics/<dataset>/<dataset>.h5ad
 ```
 
 Eligible datasets provide a harmonizable observation table and expression matrix with perturbation/control annotations.
+
+Preserved historical cleaned inputs are located separately at
+`data/prepared/scperturb/<dataset>/legacy_cleaned_20260909/matrices/`, with paired
+source-native observation tables under `metadata/source_native/`. Their existing
+normalization and exclusions require revalidation before new task use; do not
+silently substitute cleaned data for raw counts. The [preservation inventory](../../governance/records/2026-09-09-local-preservation.md)
+records the original paths and content identities.
 
 ## Organism
 
@@ -47,7 +54,7 @@ Preserve source fields that can affect state distributions, including as availab
 
 ## Control reference candidates
 
-For control-referenced response construction, eligible controls must match source/dataset and cell context and should match intervention-compatible experimental blocks when the source design allows. Exact control-reference construction is versioned in `docs/data/response_construction.md` and the task run manifest.
+For control-referenced response construction, eligible controls must match source/dataset and cell context and should match intervention-compatible experimental blocks when the source design allows. Exact control-reference construction is versioned in `docs/responses/construction.md` and the task run manifest.
 
 No random control pairing is a universal source-preprocessing rule.
 
